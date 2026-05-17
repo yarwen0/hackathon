@@ -4,7 +4,7 @@
 > reconciliation step applied between the five raw source files and the
 > populated `database.db`. Each step cites the decision record in
 > `DECISIONS.md` and, where applicable, the open-question record in
-> `QUESTIONS.md`. The validation results section is regenerated each load
+> `DECISIONS.md`. The validation results section is regenerated each load
 > by `python/01b_data_quality_checks.py` and saved to
 > `data/processed/data_quality_report.txt`.
 
@@ -42,11 +42,11 @@ and the load fails loudly.
 | # | Step | Where it happens | Justification |
 |---|---|---|---|
 | 1 | National file streamed and filtered to `StateAbbr = 'MS'` | Phase 1 download (Sat 21:53) | The national PLACES CSV is 51 MB / 229,298 rows; we ship the 1.55 MB MS subset (D-006). |
-| 2 | County FIPS taken from `LocationID` (5-char string) | Loader `pad_fips()` | The column is `LocationID`, NOT `CountyFIPS` (corrected during Phase 1 — see QUESTIONS.md "PLACES county FIPS column"). |
+| 2 | County FIPS taken from `LocationID` (5-char string) | Loader `pad_fips()` | The column is `LocationID`, NOT `CountyFIPS` (corrected during Phase 1 — previously flagged: "PLACES county FIPS column"). |
 | 3 | Both `Crude prevalence` and `Age-adjusted prevalence` retained | Loader `load_health_indicators()` | Different consumers want different lenses; persisting both costs ~3,280 rows and serves both audiences. Cross-county comparison queries filter to age-adjusted. (See data dictionary, `health_indicators` section.) |
 | 4 | Other `Data_Value_Type` variants dropped | Loader `load_health_indicators()` | The schema's CHECK constraint only allows the two prevalence types. Anything else (e.g. `Mean number of unhealthy days`) lies outside the analytical model. |
 | 5 | `NaN` data_values preserved as SQL NULL | Loader `num_or_none()` | PLACES suppresses some county-measure cells; dropping those rows would skew per-county averages. NULL propagates correctly through SQL aggregates. |
-| 6 | Year mix accepted: 2022 BRFSS for 4 measures, 2023 BRFSS for 36 | Loader sets `notes` on the 4 BRFSS-2022 measures | The 2025 release is hybrid: BPHIGH, BPMED, CHOLSCREEN, and HIGHCHOL still use 2022 BRFSS pending updated estimates. Phase 3 burden query picks the latest year per measure (open item in QUESTIONS.md "Phase 3 burden query"). |
+| 6 | Year mix accepted: 2022 BRFSS for 4 measures, 2023 BRFSS for 36 | Loader sets `notes` on the 4 BRFSS-2022 measures | The 2025 release is hybrid: BPHIGH, BPMED, CHOLSCREEN, and HIGHCHOL still use 2022 BRFSS pending updated estimates. Phase 3 burden query picks the latest year per measure (see q02 / q05 / q06 / q08 header comments). |
 | 7 | County centroids parsed from PLACES `Geolocation` POINT(lon lat) | Loader `extract_lat_lon()` | We use these for Phase 4 choropleth/map plotting. Loader verifies all 82 are non-NULL after load (Q-check `centroid_coverage`). |
 | 8 | All 40 measures load; only 10 are flagged `is_in_burden_composite=1` | Loader applies D-011 | The other 30 stay queryable for ad-hoc Q&A; the burden composite is intentionally scoped (D-011 rationale). |
 
@@ -54,7 +54,7 @@ and the load fails loudly.
 
 | # | Step | Where it happens | Justification |
 |---|---|---|---|
-| 1 | County FIPS read from `STCNTY`; `FIPS` column ignored as a value-identical duplicate | Loader `load_social_vulnerability()` | Phase 1 verified `STCNTY == FIPS` across all 82 rows (QUESTIONS.md "SVI duplicate FIPS columns"). |
+| 1 | County FIPS read from `STCNTY`; `FIPS` column ignored as a value-identical duplicate | Loader `load_social_vulnerability()` | Phase 1 verified `STCNTY == FIPS` across all 82 rows (previously flagged: "SVI duplicate FIPS columns"). |
 | 2 | -999 sentinel values coerced to SQL NULL | Loader `coerce_svi_number()` (D-014) | -999 is CDC's missing-value convention; treating it as a real number would bias percentile and average calculations. |
 | 3 | CHECK constraints catch any -999 that slips through coercion | Schema (D-014 tripwire) | RPL_* columns: `BETWEEN 0 AND 1`. EP_* columns: `BETWEEN 0 AND 100`. A missed coercion would hard-fail the INSERT. |
 | 4 | 158 SVI columns narrowed to 21 analytically-used columns | Loader `load_social_vulnerability()` | Margins of error, raw counts, and individual-variable percentiles aren't part of the analytical model. The 5 RPL_* rankings + ~15 EP_* estimates carry the relevant signal. |
@@ -69,7 +69,7 @@ and the load fails loudly.
 | 3 | Filtered to the 6 HRSA-aligned primary-care taxonomies | Phase 1 stream filter (D-008) | Matches HRSA's primary-care HPSA definition. Yields 6,404 active providers. |
 | 4 | Deactivated NPIs dropped (`NPI Deactivation Date` is blank for retained rows) | Phase 1 stream filter | Active practice is the right denominator for "capacity"; deactivated providers don't serve patients. |
 | 5 | National file (11.4 GB CSV + 1.13 GB ZIP) deleted post-filter | Phase 1 (Sat 21:55) | Reclaimed ~12 GB disk. Logged in D-008 deletion log. |
-| 6 | ZIPs sliced to first 5 chars | Loader `pad_zip5()` | Some NPPES ZIPs are 9-char ZIP+4 strings (no dash); we use the 5-char ZCTA portion for county attribution (QUESTIONS.md "NPPES ZIP+4 strings"). |
+| 6 | ZIPs sliced to first 5 chars | Loader `pad_zip5()` | Some NPPES ZIPs are 9-char ZIP+4 strings (no dash); we use the 5-char ZCTA portion for county attribution (previously flagged: "NPPES ZIP+4 strings"). |
 | 7 | County FIPS derived via ZCTA crosswalk | Loader `load_providers()` (D-010) | NPPES has no native county column. We join `practice_zip5` → `zcta_county_crosswalk.zcta5 WHERE is_assigned = 1`. |
 | 8 | Unmatched ZIPs preserved with `fips = NULL` (audit trail) | Loader `load_providers()` | 14 of 262 unique practice ZIPs don't appear as MS ZCTAs (cross-dataset reconciliation, §3). |
 | 9 | NPI length-10 CHECK enforced | Schema | Standard NPI is always 10 digits; a length mismatch would indicate a parse error and we want to know. |
@@ -78,7 +78,7 @@ and the load fails loudly.
 
 | # | Step | Where it happens | Justification |
 |---|---|---|---|
-| 1 | API call with `CENSUS_API_KEY` (in `.env`, gitignored) | Phase 1 | The Census API requires an activated key (resolved during Phase 1 after the user clicked the activation email — QUESTIONS.md "Census ACS key activation"). |
+| 1 | API call with `CENSUS_API_KEY` (in `.env`, gitignored) | Phase 1 | The Census API requires an activated key (resolved during Phase 1 after the activation email link was clicked). |
 | 2 | `state || county` synthesized into 5-char FIPS | Phase 1 | Census API returns `state` and `county` as separate columns; we concatenate with zero-padding. |
 | 3 | Population cast to int; non-positive values rejected at INSERT | Schema CHECK `population > 0` | Sanity guard. |
 | 4 | County name stripped of `, Mississippi` suffix | Loader `load_counties()` | Schema stores `Hinds County`, not `Hinds County, Mississippi`. The bare `Hinds` is what region-assignment uses. |
@@ -198,8 +198,8 @@ county; a future Phase-3.5 query can surface large divergences if any.
 | # | Limitation | Where documented |
 |---|---|---|
 | 1 | Rural flag uses a 50,000-population proxy, not USDA RUCC codes | Data dictionary (`counties`); upgrade path noted |
-| 2 | NPPES "active" = "not deactivated" = "enrolled in NPPES" — overstates effective practicing capacity | QUESTIONS.md "NPPES provider counts overstate effective capacity" |
-| 3 | PLACES Year mix (4 measures on 2022 BRFSS, 36 on 2023) — Phase 3 must pick latest per measure | QUESTIONS.md "Phase 3 burden query must explain the PLACES year mix" |
+| 2 | NPPES "active" = "not deactivated" = "enrolled in NPPES" — overstates effective practicing capacity | previously flagged: "NPPES provider counts overstate effective capacity" |
+| 3 | PLACES Year mix (4 measures on 2022 BRFSS, 36 on 2023) — Phase 3 must pick latest per measure | previously flagged: "Phase 3 burden query must explain the PLACES year mix" |
 | 4 | DeSoto County is in Delta per MDRA but is functionally Memphis-suburban; an outlier within Delta health metrics | D-013 borderline-cases note |
 | 5 | 14 NPPES practice ZIPs don't resolve to a county (PO-box / cross-state); excluded from capacity counts | §3.2 above; D-010 |
 | 6 | Multi-county ZCTAs (54 % of MS) assigned to a single county by largest-population rule; some providers will be counted in a "wrong" county whose ZIP they share | D-010; data dictionary `zcta_county_crosswalk` |
@@ -293,7 +293,6 @@ produces a bit-identical database and an identical quality report.
 ## 7. References
 
 - `DECISIONS.md` D-001..D-015 — every cleaning-relevant judgment call
-- `QUESTIONS.md` — resolved and open items by phase
 - `schema/create_tables.sql` — schema with CHECK / FK constraints
 - `schema/data_dictionary.md` — column-by-column reference
 - `python/01_load_data.py` — the loader (code is canonical)

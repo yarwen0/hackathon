@@ -367,7 +367,7 @@ populations and provider counts are in the database.
 | Region partition citations | `DECISIONS.md` D-013 |
 | -999 coercion rule | `DECISIONS.md` D-014 |
 | Why no `regions` lookup table | `DECISIONS.md` D-015 |
+| EGI weighting + view + component exposure + no-floor decisions | `DECISIONS.md` D-016..D-019 |
 | Step-by-step cleaning narrative | `docs/data_cleaning_report.md` |
-| Open analytical questions for Phase 3+ | `QUESTIONS.md` |
 | Schema as runnable SQL | `schema/create_tables.sql` |
-| ER diagram | `schema/er_diagram.md` and `schema/er_diagram.png` |
+| ER diagram | `schema/er_diagram.png` |

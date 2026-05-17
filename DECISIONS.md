@@ -60,7 +60,7 @@ not the macOS-default Python 3.14.3.
   libraries we depend on (notably `statsmodels`, certain `scipy`/`numpy`
   combinations, and parts of the `geopandas` stack) do not yet have universally
   available prebuilt wheels for 3.14 on macOS arm64. Falling back to source
-  builds would consume hours of our 48-hour budget and could fail without a
+  builds would consume time we couldn't afford to lose and could fail in environment-specific ways without a
   Fortran toolchain.
 - Python 3.12 is the current stable, widely-supported scientific-stack version.
   All required packages installed cleanly from prebuilt wheels in a single
@@ -550,12 +550,11 @@ cleaning deliverable. Specifically the following seven artifacts:
 | # | Deliverable           | File                                          |
 |---|-----------------------|-----------------------------------------------|
 | 1 | Schema                | `schema/create_tables.sql`                    |
-| 2 | ER diagram (textual)  | `schema/er_diagram.md` (mermaid)              |
-| 3 | ER diagram (image)    | `schema/er_diagram.png`                       |
-| 4 | Data dictionary       | `schema/data_dictionary.md`                   |
-| 5 | Ingestion script      | `python/01_load_data.py`                      |
-| 6 | Data quality checks   | `python/01b_data_quality_checks.py`           |
-| 7 | Cleaning report       | `docs/data_cleaning_report.md`                |
+| 2 | ER diagram            | `schema/er_diagram.png`                       |
+| 3 | Data dictionary       | `schema/data_dictionary.md`                   |
+| 4 | Ingestion script      | `python/01_load_data.py`                      |
+| 5 | Data quality checks   | `python/01b_data_quality_checks.py`           |
+| 6 | Cleaning report       | `docs/data_cleaning_report.md`                |
 
 The DQ-check script also emits `data/processed/data_quality_report.txt`
 which the cleaning report cites.
@@ -564,14 +563,13 @@ which the cleaning report cites.
 single phase ensures the schema and the ingestion match. Splitting them
 across phases risks the schema being designed in isolation from the
 ingestion realities surfaced in Phase 1. The cleaning report assembles
-material already in DECISIONS.md and QUESTIONS.md into a judge-facing
-narrative — assembly, not authorship.
+material from the decision log into a judge-facing narrative — assembly,
+not authorship.
 
-**Exit criteria:** All 7 artifacts produced; `database.db` loads cleanly
+**Exit criteria:** All 6 artifacts produced; `database.db` loads cleanly
 from `data/raw/*.csv` via `python python/01_load_data.py`; all data quality
 checks pass via `python python/01b_data_quality_checks.py` (exit code 0);
-PROJECT_PLAN.md Phase 2 boxes ticked; RUBRIC_CHECKLIST.md "Data
-Understanding & Schema Design" and "Data cleaning workflows" items ticked.
+schema and cleaning-workflow rubric items satisfied.
 
 ### D-013. Region partition: 4 regions with cited source authorities
 
@@ -706,9 +704,9 @@ changes one row.
    U.S. county health composite — uses equal-weighted theme aggregation. SVI
    itself uses equal weights across its 4 themes (computed by CDC/ATSDR).
    Following these conventions is established practice.
-2. **Honesty.** This is a 48-hour analysis without formal stakeholder
-   elicitation. Any non-equal weights would require defending a choice we
-   can't substantively defend.
+2. **Honesty.** Without a formal stakeholder-elicitation process, any
+   non-equal weights would require defending a choice we can't
+   substantively defend.
 3. **Transparency.** Equal weights are immediately interpretable. "Each
    pillar counts equally" is one sentence.
 4. **Tunability.** Weights live in a single `weights` CTE — any future
@@ -716,9 +714,9 @@ changes one row.
 
 **Presentation framing for Monday:** *"We use equal weights — the same
 convention used by the County Health Rankings, the leading U.S. county
-health composite. We considered three alternative weighting schemes, but in
-a 48-hour analysis without formal stakeholder elicitation, equal weights
-are the only fully defensible choice."*
+health composite. We considered three alternative weighting schemes, but
+without a formal stakeholder-elicitation process, equal weights are the
+most defensible choice."*
 
 ### D-017. EGI implementation as a SQL VIEW, not a persisted table
 

@@ -22,11 +22,10 @@ Mississippi Health Equity Gap Index
 **Body (slide layout):**
 - Subtitle: "A county-level composite combining health burden, provider capacity, and social vulnerability"
 - Author: *[your name]*
-- Affiliation / occasion: Gulf South Center for Community-Engaged Health Research and Innovation — Round 1 Backend Data Challenge
 - Date: 2026-05-18
 
 **Speaker notes:**
-Good afternoon. I'm *[your name]*. Over the past 48 hours I built the Mississippi Health Equity Gap Index — a county-level composite that ranks all 82 Mississippi counties by underservedness, combining three federally-sourced inputs. Let me show you the headline finding.
+Good afternoon. I'm *[your name]*. I built the Mississippi Health Equity Gap Index — a county-level composite that ranks all 82 Mississippi counties by underservedness, combining three federally-sourced inputs. Let me show you the headline finding.
 
 ---
 
@@ -98,7 +97,7 @@ EGI = (1/3) × Burden component
 Each component min-max normalized 0–100 across 82 MS counties. Equal weights follow the **County Health Rankings** convention; defended in `DECISIONS.md` D-016 against three alternatives.
 
 **Speaker notes:**
-The Equity Gap Index is one-third burden plus one-third capacity plus one-third vulnerability, where each component is normalized to a zero-to-100 scale across Mississippi counties. Burden is a polarity-aware average of 10 PLACES measures. Capacity is primary-care providers per ten thousand residents, inverted. Vulnerability is the SVI intra-state percentile. Equal weights follow the County Health Rankings convention — we considered three alternative weighting schemes and rejected each. In a 48-hour analysis without formal stakeholder elicitation, equal weights are the only fully defensible choice. The full math lives in one SQL file.
+The Equity Gap Index is one-third burden plus one-third capacity plus one-third vulnerability, where each component is normalized to a zero-to-100 scale across Mississippi counties. Burden is a polarity-aware average of 10 PLACES measures. Capacity is primary-care providers per ten thousand residents, inverted. Vulnerability is the SVI intra-state percentile. Equal weights follow the County Health Rankings convention — we considered three alternative weighting schemes and rejected each. Without a formal stakeholder-elicitation process, equal weights are the most defensible choice. The full math lives in one SQL file.
 
 ---
 
@@ -130,20 +129,38 @@ The top 10 counties, EGI scores ranging from 73 to 87. Each bar shows the three 
 
 ---
 
-## Slide 8 — How the Gulf South Center could use this  (~50s)  *[ultrathink: closer]*
+## Slide 8 — What's in it for the Gulf South Center  (~55s)
 
 **Title:**
-What this means for the Gulf South Center
+What's in it for the Gulf South Center
 
-**Body (4 bullets):**
+**Footer tag:** Use case
 
-- **Prioritization** — one-page county ranking with all three components visible, ready for a steering committee
-- **Longitudinal tracking** — pipeline regenerates from latest federal data in 10 seconds
-- **Defensible advocacy** — every resource-allocation decision has receipts: 3 federal datasets, traceable methodology, every decision logged
-- **Methodology, not just numbers** — the codebase is a starting point if the Center ever extends to other Gulf South states with identical federal inputs
+**Body (4 cards in 2×2 grid):**
+
+| Card 1 — Decision-ready ranking | Card 2 — Reproducible by design |
+|---|---|
+| All 82 counties ranked, with each component visible per county. A steering committee can open one CSV and see priority order plus the reason for the priority. | The full pipeline regenerates from raw federal data in a single command. As PLACES, SVI, and HRSA update annually, the index updates with them. |
+
+| Card 3 — Traceable methodology | Card 4 — Extensible foundation |
+|---|---|
+| Every analytical decision logged with rationale. When the Center allocates resources, the receipts are right there — three federal datasets, transparent math, no black box. | The codebase is a starting point. Add specialty-care taxonomies, swap rural classification for USDA RUCC, extend to AL/LA/AR — the federal inputs are the same. |
+
+**Closing box:**
+"Three concrete next steps would make this a working tool: stakeholder-elicited weights to replace the equal-thirds default, a multi-year time series to surface trends, and sub-county breakdowns by age and race where the underlying data supports it. That's the work I'd want to do at the Center."
 
 **Speaker notes:**
-Four concrete uses for the Gulf South Center. First — prioritization: a one-page county ranking with all three components visible, ready for a steering committee. Second — longitudinal tracking: the pipeline regenerates from the latest federal data in 10 seconds, so this index updates as PLACES, SVI, and HRSA update annually. Third — defensible advocacy: when the Center allocates resources, the receipts are right there — three federal datasets, traceable methodology, every decision numbered and logged. Fourth — methodology, not just numbers. The codebase is a starting point if the Center ever extends the index to other Gulf South states. Alabama, Louisiana, Arkansas all have the same federal inputs available. Built in 48 hours, solo, with no prior MS health background. With a summer at the Gulf South Center, this is the kind of work I want to do at depth.
+Four concrete things this index gives the Gulf South Center.
+
+First — decision-ready ranking. All 82 counties, each with the three component scores visible. Open one CSV, see priority order plus the reason for that priority.
+
+Second — reproducible by design. The full pipeline regenerates from raw federal data in a single command. As PLACES, SVI, and HRSA update annually, the index updates with them — no rebuild needed.
+
+Third — traceable methodology. Every analytical decision logged with rationale. When the Center allocates resources, the receipts are right there — three federal datasets, transparent math, no black box.
+
+Fourth — extensible foundation. Add specialty-care taxonomies, swap rural classification for USDA RUCC, extend to Alabama, Louisiana, Arkansas. The codebase is a starting point, not a black box.
+
+Three concrete next steps would make this a working tool: stakeholder-elicited weights to replace the equal-thirds default, a multi-year time series to surface trends, and sub-county breakdowns by age and race where the underlying data supports it. That's the work I'd want to do at the Gulf South Center.
 
 ---
 

@@ -6,7 +6,7 @@ V1 (HEADLINE): Interactive Plotly choropleth of MS 82 counties shaded by
                 Outputs HTML (interactive) + PNG (slide-ready).
 V2: Top-10 stacked horizontal bar chart — component contributions sum to EGI.
 V3: 2x5 small multiples drivers grid — one subplot per top-10 county with
-    driver_profile annotation (per QUESTIONS.md transparency note).
+    driver_profile annotation (makes the D-019 transparency promise visible).
 V4: 82-county burden vs capacity scatter colored by vulnerability;
     Issaquena gets a prominent star marker and bold label.
 V5: Convenience copy of the full EGI ranking CSV into visualizations/.
@@ -301,7 +301,7 @@ def visualize_top10_bar(top10: pd.DataFrame) -> bool:
 def visualize_drivers_grid(top10: pd.DataFrame) -> bool:
     """V3 — 2x5 small multiples: one subplot per top-10 county; 3 bars
     (burden/capacity/vulnerability) per subplot; driver_profile annotated
-    bottom-right per subplot to make D-019/QUESTIONS.md transparency visible."""
+    bottom-right per subplot to make the D-019 transparency promise visible."""
     logger.info("=== V3: drivers grid ===")
     df = top10.sort_values("egi_rank")
     fig, axes = plt.subplots(2, 5, figsize=(16, 7), sharey=True)

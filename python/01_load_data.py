@@ -135,7 +135,7 @@ POLARITY_NEGATIVE = {
 # (insufficient), STROKE, TEETHLOST, VISION.
 
 # 4 PLACES measures still published on 2022 BRFSS in the 2025 release; the
-# other 36 use 2023 BRFSS. Documented in D-006 amendment + QUESTIONS.md.
+# other 36 use 2023 BRFSS. Documented in D-006 amendment.
 BRFSS_2022_MEASURES = {"BPHIGH", "BPMED", "CHOLSCREEN", "HIGHCHOL"}
 BRFSS_NOTE = ("Year=2022 because BRFSS rotates this question; "
               "4 of 40 measures share this caveat "

@@ -6,7 +6,7 @@
 --             tells the reader at a glance whether each county's high EGI
 --             comes from a single extreme pillar or all three pillars
 --             together. Makes D-019's promise of transparency visible
---             (per QUESTIONS.md note).
+--             (per DECISIONS.md D-019 note).
 -- TABLES:     v_equity_gap_index
 -- TECHNIQUES: UNPIVOT via UNION ALL (3 components -> long form),
 --             ROW_NUMBER() OVER (PARTITION BY fips ORDER BY val DESC),
@@ -17,7 +17,7 @@
 --             egi_score, egi_rank, dominant_component (TEXT),
 --             driver_profile (TEXT — one of "single-component dominant",
 --             "one component leading", "multi-component").
--- DESIGN:     driver_profile thresholds (30 pp / 15 pp) come from QUESTIONS.md;
+-- DESIGN:     driver_profile thresholds (30 pp / 15 pp) come from DECISIONS.md D-019;
 --             chosen to make the Issaquena case ("multi-component", top vs
 --             second gap = 9.88) visibly different from any single-component
 --             counter-example. UNPIVOT was chosen over nested CASE because
@@ -69,7 +69,7 @@ extremes AS (
 )
 
 -- 5. Join top10 + extremes; derive driver_profile via the 30/15 pp bins
---    from the QUESTIONS.md spec.
+--    from the DECISIONS.md D-019 spec.
 SELECT
     t.fips,
     t.county_name,

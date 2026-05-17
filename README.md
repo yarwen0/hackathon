@@ -23,7 +23,7 @@ Issaquena tops our independently-computed Equity Gap Index not because of any si
 
 The Mississippi Health Equity Gap Index (EGI) is a county-level composite ranking Mississippi's 82 counties by underservedness. The index combines three federally-sourced inputs — chronic disease burden, primary-care provider capacity, and social vulnerability — into a single 0–100 score per county. The project ships a fully reproducible pipeline: a single command (`python run_pipeline.py`) regenerates every artifact in this repository from the raw federal data downloads.
 
-Built as a 48-hour submission for the Gulf South Center for Community-Engaged Health Research and Innovation. Designed to be a decision-support tool the Center could actually use to prioritize where to invest the most attention and resources.
+Built for the Gulf South Center for Community-Engaged Health Research and Innovation as a Mississippi-focused decision-support tool. Designed to be something the Center could actually use to prioritize where to invest the most attention and resources.
 
 ## The map
 
@@ -138,17 +138,14 @@ If you just want to query the pre-built database without re-running the pipeline
 hackathon-2026/
 ├── README.md                              this file
 ├── DECISIONS.md                           19 numbered decisions (D-001..D-019)
-├── QUESTIONS.md                           open and resolved analytical questions
-├── PROJECT_PLAN.md                        phase tracker
-├── RUBRIC_CHECKLIST.md                    rubric coverage
 ├── requirements.txt                       Python dependencies
 ├── .env.example                           Census API key template
 ├── database.db                            loaded SQLite database (ships in repo)
 ├── run_pipeline.py                        one command to regenerate everything
+├── presentation.pptx                      9-slide deck for the 6-minute talk
 ├── schema/
 │   ├── create_tables.sql                  9 tables + 9 indexes, idempotent
 │   ├── data_dictionary.md                 column-by-column reference
-│   ├── er_diagram.md                      mermaid ER diagram source
 │   └── er_diagram.png                     rendered ER diagram
 ├── sql/
 │   ├── q01_state_overview.sql             state context (provenance + scope + top burdens)
@@ -165,16 +162,19 @@ hackathon-2026/
 │   ├── 02_visualize.py                    5 visualizations
 │   └── 03_statistical_analysis.py         correlation, OLS, bootstrap, outliers
 ├── visualizations/                        5 visual artifacts + full ranking CSV
+├── notebooks/
+│   └── analysis_walkthrough.ipynb         interactive end-to-end walkthrough
 ├── data/
 │   ├── raw/                               source CSVs (gitignored; pipeline-regenerable)
 │   └── processed/                         query outputs + DQ report + stats artifacts
 └── docs/
     ├── data_cleaning_report.md            per-dataset cleaning narrative
     ├── context_and_background.md          MS health context with citations
+    ├── presentation_script.md             9-slide script with speaker notes
     └── presentation_talking_points.md     verbatim-usable lines for the deck
 ```
 
-Every analytical and methodological decision is logged with rationale in [`DECISIONS.md`](DECISIONS.md) (D-001 through D-019). Cleaning workflow narrative including the D-010 amendment is in [`docs/data_cleaning_report.md`](docs/data_cleaning_report.md). Background research with citations is in [`docs/context_and_background.md`](docs/context_and_background.md).
+Every analytical and methodological decision is logged with rationale in [`DECISIONS.md`](DECISIONS.md) (D-001 through D-019). Cleaning workflow narrative including the D-010 amendment is in [`docs/data_cleaning_report.md`](docs/data_cleaning_report.md). Background research with citations is in [`docs/context_and_background.md`](docs/context_and_background.md). The 6-minute presentation script with speaker notes is in [`docs/presentation_script.md`](docs/presentation_script.md).
 
 ## Repository
 

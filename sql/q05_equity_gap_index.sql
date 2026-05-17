@@ -31,9 +31,8 @@
 --
 -- DESIGN:
 --   D-016: Equal-thirds weighting (1/3 each). County Health Rankings
---          precedent + 48-hour honesty + transparency + tunability via the
---          single `weights` CTE. See DECISIONS.md for the four-option
---          rejection table.
+--          precedent + transparency + tunability via the single `weights`
+--          CTE. See DECISIONS.md for the four-option rejection table.
 --   D-017: VIEW (not persisted table). At 82-row scale view recomputation
 --          is sub-millisecond; keeps the math auditable in this file.
 --   D-018: All three component scores exposed in the view output (10 cols).
