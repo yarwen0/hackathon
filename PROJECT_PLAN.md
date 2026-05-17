@@ -25,16 +25,16 @@
 - [x] Commit to git
 
 ## Phase 2: Schema Design & Ingestion (~3 hrs)
-- [ ] Draft ER diagram (paper sketch first, then dbdiagram.io)
-- [ ] Export ER diagram to `schema/er_diagram.png`
-- [ ] Write `schema/create_tables.sql` with PKs, FKs, types, NOT NULL constraints
-- [ ] Write `schema/data_dictionary.md` (column-by-column reference)
-- [ ] Write `python/01_load_data.py` — read raw CSVs, filter MS, clean, validate, load to SQLite
-- [ ] Write `python/01b_data_quality_checks.py` — row counts, FIPS coverage, null checks, range checks, suppression flags
-- [ ] Write `docs/data_cleaning_report.md` — every cleaning decision logged
-- [ ] Run loader; verify `database.db` populated correctly
-- [ ] Update DECISIONS.md
-- [ ] Commit to git
+- [x] Draft ER diagram (mermaid source in schema/er_diagram.md)
+- [x] Export ER diagram to `schema/er_diagram.png` (matplotlib local render)
+- [x] Write `schema/create_tables.sql` — 9 tables, PKs/FKs/CHECKs, idempotent DROPs, indexes
+- [x] Write `schema/data_dictionary.md` — column-by-column reference + 4 required paragraphs
+- [x] Write `python/01_load_data.py` — single-transaction loader, all rules from D-011/D-013/D-014
+- [x] Write `python/01b_data_quality_checks.py` — 27 checks, exit non-zero on failure
+- [x] Write `docs/data_cleaning_report.md` — bonus deliverable, cites every D-XXX
+- [x] Run loader; verify `database.db` populated correctly (all 9 tables, exit 0)
+- [x] Update DECISIONS.md (D-011..D-015)
+- [x] Commit to git
 
 ## Phase 3: Analytical SQL (~4 hrs)
 - [ ] `sql/q01_state_overview.sql` — MS vs national baseline

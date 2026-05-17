@@ -52,6 +52,14 @@ items get a strikethrough and a one-line resolution note.
   why we pick the latest year per measure (4 measures still on 2022 BRFSS,
   the rest on 2023). This is critical for the presentation defense.
 
+- **01b DQ check must verify all 82 county centroids are non-NULL.**
+  `counties.latitude` and `counties.longitude` are nullable in the schema
+  (extracted from PLACES `Geolocation` POINT values), but Phase 4's
+  choropleth and Plotly maps require complete coverage. The data quality
+  check script (Phase 2 Step F) must add a hard assertion that all 82
+  counties have non-NULL lat/lon — fail with non-zero exit code if any
+  county is missing a centroid.
+
 - **Some NPPES ZIPs may be 9-digit (ZIP+4) strings without dash.**
   Quick scan shows 9-character ZIPs in the raw column. We slice to first 5
   for FIPS lookup; document this in the data cleaning report.

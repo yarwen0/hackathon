@@ -408,7 +408,190 @@ match a MS ZCTA in the crosswalk — above our 90% acceptability threshold.
 
 ## Phase 2 — Schema Design & Ingestion
 
-_(to be filled in)_
+### D-011. PLACES burden composite scope: 10 of 40 measures
+
+**Decision:** The PLACES burden composite (one of three inputs to the EGI) is
+computed from exactly these **10 measures**, not all 40:
+
+| Domain              | MeasureId   | Description                                | Polarity |
+|---------------------|-------------|--------------------------------------------|----------|
+| Chronic disease     | DIABETES    | Diagnosed diabetes                         | +1       |
+| Chronic disease     | BPHIGH      | High blood pressure                        | +1       |
+| Chronic disease     | OBESITY     | Obesity                                    | +1       |
+| Chronic disease     | COPD        | Chronic obstructive pulmonary disease      | +1       |
+| Chronic disease     | CHD         | Coronary heart disease                     | +1       |
+| Mental health       | DEPRESSION  | Depression                                 | +1       |
+| Mental health       | MHLTH       | Frequent mental distress (>=14 days/mo)    | +1       |
+| Healthcare access   | ACCESS2     | Lack of health insurance (ages 18–64)      | +1       |
+| Healthcare access   | CHECKUP     | Routine checkup in past year               | **−1**   |
+| Prevention          | CHOLSCREEN  | Cholesterol screening                      | **−1**   |
+
+**Rationale:**
+- Balanced four-domain mix (chronic disease / mental health / access /
+  prevention) so no single domain dominates the burden score.
+- Each domain has well-documented public-health salience for Mississippi
+  specifically (high diabetes & CHD burden; rural mental-health desert;
+  highest-in-nation uninsured rate).
+- Ten components is enough to give a stable composite (averaging 10
+  measures is far less noisy than averaging 3) without overweighting any
+  single signal.
+- The other 30 measures remain queryable for ad-hoc analysis and judge
+  Q&A — they load into the same tables, just with
+  `is_in_burden_composite = 0`.
+
+**Polarity semantics:** 8 of the 10 are "more is worse" (polarity = +1);
+CHECKUP and CHOLSCREEN are preventive services where **higher = better**,
+so their polarity is **−1** and the burden math inverts them. Polarity is
+populated for **all 40 measures** at load time (Refinement 1 from user):
+six measures get polarity = −1 (BPMED, CHECKUP, CHOLSCREEN, COLON_SCREEN,
+DENTAL, MAMMOUSE — all preventive services / treatment-adherence), the
+remaining 34 get +1. This is forward-compatible: if the composite is ever
+extended, polarity is already there.
+
+**Implementation:** All 40 PLACES measures load into `measures` and
+`health_indicators`. The `is_in_burden_composite` column on `measures`
+flags the 10 above with value 1; others get 0. Phase 3 q05 (EGI) filters
+`WHERE m.is_in_burden_composite = 1` and uses `m.polarity` to orient the
+math.
+
+### D-012. Phase 2 scope: schema + ingestion + quality checks + cleaning report
+
+**Decision:** Phase 2 produces everything needed to go from raw CSVs to a
+fully populated, queryable `database.db`, plus the bonus-criteria data
+cleaning deliverable. Specifically the following seven artifacts:
+
+| # | Deliverable           | File                                          |
+|---|-----------------------|-----------------------------------------------|
+| 1 | Schema                | `schema/create_tables.sql`                    |
+| 2 | ER diagram (textual)  | `schema/er_diagram.md` (mermaid)              |
+| 3 | ER diagram (image)    | `schema/er_diagram.png`                       |
+| 4 | Data dictionary       | `schema/data_dictionary.md`                   |
+| 5 | Ingestion script      | `python/01_load_data.py`                      |
+| 6 | Data quality checks   | `python/01b_data_quality_checks.py`           |
+| 7 | Cleaning report       | `docs/data_cleaning_report.md`                |
+
+The DQ-check script also emits `data/processed/data_quality_report.txt`
+which the cleaning report cites.
+
+**Rationale:** Bundling schema design, ingestion, and validation into a
+single phase ensures the schema and the ingestion match. Splitting them
+across phases risks the schema being designed in isolation from the
+ingestion realities surfaced in Phase 1. The cleaning report assembles
+material already in DECISIONS.md and QUESTIONS.md into a judge-facing
+narrative — assembly, not authorship.
+
+**Exit criteria:** All 7 artifacts produced; `database.db` loads cleanly
+from `data/raw/*.csv` via `python python/01_load_data.py`; all data quality
+checks pass via `python python/01b_data_quality_checks.py` (exit code 0);
+PROJECT_PLAN.md Phase 2 boxes ticked; RUBRIC_CHECKLIST.md "Data
+Understanding & Schema Design" and "Data cleaning workflows" items ticked.
+
+### D-013. Region partition: 4 regions with cited source authorities
+
+**Decision:** Each MS county is assigned to exactly one of four regions:
+
+| Region    | Count | Counties                                                                                                                                                         |
+|-----------|-------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Delta     | 18    | Bolivar, Carroll, Coahoma, DeSoto, Holmes, Humphreys, Issaquena, Leflore, Panola, Quitman, Sharkey, Sunflower, Tallahatchie, Tate, Tunica, Warren, Washington, Yazoo |
+| Coastal   | 3     | Hancock, Harrison, Jackson                                                                                                                                       |
+| Pine Belt | 8     | Forrest, Lamar, Marion, Pearl River, Perry, Stone, Walthall, Wayne                                                                                               |
+| Other     | 53    | All remaining counties (capital region, hills, Black Prairie, etc.)                                                                                              |
+
+**Source authorities:**
+- **Delta** — Mississippi Delta Regional Authority (DRA), the federal
+  regional commission whose authorizing legislation enumerates the 18 MS
+  Delta counties. Authoritative URL: `msdelta.gov`.
+- **Coastal** — Mississippi Gulf Coast counties as defined in MS Department
+  of Health regional planning: Hancock, Harrison, Jackson (the three
+  counties touching the Gulf of Mexico).
+- **Pine Belt** — Pine Belt Mental Healthcare Resources service-area
+  definition, the conventional 8-county Pine Belt. The same 8 counties are
+  used by the Pine Belt Regional Solid Waste Management Authority and
+  other regional entities.
+- **Other** — Residual: not in any of the above three. Composed of the
+  capital region (Hinds/Madison/Rankin), north-central hills, Black
+  Prairie, and other sub-regions. We do not further subdivide because
+  (a) the primary analytical contrast in Phase 3 q07 is **Delta vs
+  non-Delta**, not finer partition, and (b) further subdivision would
+  produce regions so small (n < 5 counties) that statistical comparisons
+  would be meaningless.
+
+**Borderline cases documented:**
+- **DeSoto County** is included in Delta per the MDRA's official 18-county
+  designation. Functionally, DeSoto is Memphis-suburban (population 186k,
+  the third-largest MS county), which would make it an outlier within
+  Delta health metrics. We retain DeSoto in Delta because (a) the official
+  MDRA classification is the most citation-defensible choice, and
+  (b) treating DeSoto specially would compound an arbitrary judgment.
+  Phase 3 q07 will surface DeSoto's metrics alongside the rest of Delta;
+  any unusual signature can be flagged in the analysis writeup.
+- **Holmes, Panola, Carroll** are sometimes counted as hill country rather
+  than Delta in informal usage. MDRA includes all three; we follow MDRA.
+
+**Loading mechanism:** The 82-row region assignment is hard-coded in
+`python/01_load_data.py` as a FIPS-keyed dictionary, sourced from MDRA
+plus the cited regional authorities. The cleaning report cites the same
+sources so the partition is defensible at the presentation.
+
+### D-014. SVI -999 missing-value sentinel coerced to NULL at load
+
+**Decision:** The CDC/ATSDR SVI 2022 source file uses the literal value
+`-999` (numeric, not a string) as a sentinel for "data not available" in
+both percentile (RPL_*, EPL_*) and percentage estimate (EP_*) columns.
+The loader (`python/01_load_data.py`) **coerces every -999 in the SVI
+input to SQL NULL** before insertion into `social_vulnerability`.
+
+**Defense-in-depth:** The schema (`schema/create_tables.sql`) adds CHECK
+constraints on every percentile column (`BETWEEN 0 AND 1` or NULL) and
+every percentage column (`BETWEEN 0 AND 100` or NULL) on
+`social_vulnerability`. If the loader ever fails to coerce a -999 — for
+example, after a column is added to SVI but missed in the coercion
+list — the database INSERT will hard-fail with a CHECK constraint
+violation, surfacing the bug immediately rather than silently writing
+nonsense data.
+
+**Rationale:**
+- -999 is a CDC convention but is poisonous to numeric SQL — it would
+  bias averages, percentiles, and correlations if treated as a real value.
+- NULL is the correct SQL representation of "unknown" and propagates
+  through aggregates correctly (averages ignore it, COUNT(*) vs COUNT(col)
+  behavior makes missingness visible).
+- The CHECK constraints act as a tripwire: any silent regression in
+  coercion logic is caught at load time, not in the analysis.
+
+**Implementation:** Loader uses `df.replace(-999, pd.NA)` on the SVI
+numeric columns immediately after read; the NaN values then become SQL
+NULL when written via pandas-to-SQLite.
+
+### D-015. No `regions` lookup table; region citations live in docs
+
+**Decision:** The schema deliberately does NOT include a `regions`
+reference table. Region values (`Delta`, `Coastal`, `Pine Belt`, `Other`)
+live as a CHECK-constrained TEXT column on `counties`. Region definitions
+and source authorities live in DECISIONS.md (D-013) and the data
+dictionary, not in a database row.
+
+**Rationale:**
+- 4 region values total; a `regions` table would have 4 rows and one
+  column we actually need (a textual label that's already self-describing).
+- Phase 3's regional comparison query (q07) becomes `WHERE region = 'Delta'`
+  rather than `JOIN regions ON counties.region_id = regions.id` — easier
+  to teach, audit, and defend in the presentation.
+- Citation queryability was the main argument *for* a `regions` table
+  (e.g., a `regions.source_url` column). We rejected this because the
+  citations belong in human-readable docs (DECISIONS.md, data dictionary,
+  cleaning report), not in tabular database rows that judges won't query.
+- A CHECK constraint enumerating the 4 valid values prevents typo errors
+  at load time, which is what a normalized lookup table would otherwise
+  guard against.
+
+**Trade-off accepted:** If we ever needed region-level attributes
+(description, color hint for visualizations, sub-region tier), we would
+add a tiny `regions` reference table at that point. Adding the table
+later is a no-op for existing queries because `counties.region` becomes
+the FK column. Nothing is being lost by deferring.
+
+
 
 ---
 

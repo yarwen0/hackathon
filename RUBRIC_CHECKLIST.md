@@ -26,17 +26,17 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Challenge Requirement 1: Data Organization & Database Design
 
-- [ ] Explored and understood datasets → see `python/01b_data_quality_checks.py` output
-- [ ] Data cleaned and prepared → see `docs/data_cleaning_report.md`
-- [ ] Structured SQL database designed → `database.db` (SQLite)
-- [ ] Tables defined → 4 tables: counties, health_indicators, social_vulnerability, provider_capacity
-- [ ] Relationships defined → FKs from fact tables to counties.fips
-- [ ] Primary keys defined → see `schema/create_tables.sql`
-- [ ] Data types specified → see `schema/create_tables.sql`
-- [ ] Assumptions documented → `DECISIONS.md`
-- [ ] Schema decisions documented → `DECISIONS.md` + `schema/data_dictionary.md`
-- [ ] Data transformations documented → `docs/data_cleaning_report.md`
-- [ ] Normalization choices documented → `DECISIONS.md`
+- [x] Explored and understood datasets → see `python/01b_data_quality_checks.py` output + report
+- [x] Data cleaned and prepared → see `docs/data_cleaning_report.md`
+- [x] Structured SQL database designed → `database.db` (SQLite, 9 tables, all CHECKs/FKs enforced)
+- [x] Tables defined → 9 tables: counties (hub), data_sources, measures, taxonomies, zcta_county_crosswalk, health_indicators, social_vulnerability, providers, provider_capacity
+- [x] Relationships defined → 8 FK relationships, ER diagram at `schema/er_diagram.png`
+- [x] Primary keys defined → every table has a PK (single or composite); see `schema/create_tables.sql`
+- [x] Data types specified → SQLite-native TEXT/INTEGER/REAL with CHECK constraints; see `schema/create_tables.sql`
+- [x] Assumptions documented → `DECISIONS.md` D-001..D-015
+- [x] Schema decisions documented → `DECISIONS.md` + `schema/data_dictionary.md`
+- [x] Data transformations documented → `docs/data_cleaning_report.md`
+- [x] Normalization choices documented → `DECISIONS.md` D-015 (regions as column not table), D-011 (long-form measures), D-008 (taxonomy table)
 
 ## Challenge Requirement 2: SQL & Data Querying
 
@@ -77,7 +77,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Evaluation Criteria Coverage
 
-- [ ] Data Understanding & Schema Design → 4-table normalized schema + ER diagram + data dictionary
+- [x] Data Understanding & Schema Design → 9-table normalized schema + ER diagram + data dictionary (DECISIONS.md D-011..D-015)
 - [ ] Querying & Analysis → 8 SQL files with CTEs, window functions, joins
 - [ ] Insight Generation → composite EGI, top-10 ranking, driver breakdown, regional comparison
 - [ ] Visualization → 6 charts including interactive choropleth
@@ -87,7 +87,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 ## BONUS CONSIDERATIONS (ALL SIX MUST BE TICKED)
 
 - [ ] **Advanced SQL techniques** → CTEs in q05, RANK/NTILE/PERCENT_RANK in q02/q03/q06
-- [ ] **Data cleaning workflows** → `python/01b_data_quality_checks.py` + `docs/data_cleaning_report.md`
+- [x] **Data cleaning workflows** → `python/01b_data_quality_checks.py` (27 checks all PASS) + `docs/data_cleaning_report.md`
 - [ ] **Statistical analysis** → `python/03_statistical_analysis.py` (Pearson, OLS, bootstrap CI, outliers)
 - [ ] **Automation** → `run_pipeline.py` regenerates entire project in one command
 - [ ] **Interactive visualizations** → Plotly choropleth saved as standalone HTML

@@ -1,0 +1,39 @@
+==============================================================================
+DATA QUALITY REPORT — Mississippi Health Equity Gap Index
+==============================================================================
+Database: /Users/nhujah/hackathon-2026/database.db
+Checks:   27
+Elapsed:  0.00 s
+
+CHECK                                                   STATUS  DETAIL
+------------------------------------------------------------------------------
+row_count.counties                                      PASS    actual=82  expected=82
+row_count.data_sources                                  PASS    actual=5  expected=5
+row_count.taxonomies                                    PASS    actual=6  expected=6
+row_count.measures                                      PASS    actual=40  expected=40
+row_count.zcta_county_crosswalk                         PASS    actual=771  expected=771
+row_count.health_indicators                             PASS    actual=6,560  expected=6,560
+row_count.social_vulnerability                          PASS    actual=82  expected=82
+row_count.providers                                     PASS    actual=6,404  expected=6,404
+row_count.provider_capacity                             PASS    actual=492  expected=492
+fips_coverage.counties                                  PASS    distinct fips=82 (expected 82)
+fips_coverage.health_indicators                         PASS    distinct fips=82 (expected 82)
+fips_coverage.social_vulnerability                      PASS    distinct fips=82 (expected 82)
+fips_coverage.provider_capacity                         PASS    distinct fips=82 (expected 82)
+foreign_key_check                                       PASS    0 orphan FK rows
+centroid_coverage                                       PASS    0 counties missing centroid (expected 0)
+range.counties.population_positive                      PASS    0 rows with population <= 0
+range.health_indicators.data_value_in_0_100             PASS    0 rows with data_value out of [0,100]
+range.svi.rpl_themes_populated                          PASS    82 of 82 rows have non-NULL rpl_themes
+range.svi.ep_pov150_populated                           PASS    82 of 82 rows have non-NULL ep_pov150
+range.provider_capacity.count_non_negative              PASS    0 rows with provider_count < 0
+nppes_zip_coverage                                      PASS    248/262 unique ZIPs matched (94.7%); threshold 90%
+burden_composite_membership                             PASS    |actual|=10 expected=10
+polarity_spot.CHECKUP                                   PASS    polarity=-1 burden=1  (expected polarity=-1, burden=1)
+polarity_spot.CHOLSCREEN                                PASS    polarity=-1 burden=1  (expected polarity=-1, burden=1)
+polarity_spot.DIABETES                                  PASS    polarity=1 burden=1  (expected polarity=1, burden=1)
+data_sources_complete                                   PASS    total=5  with rows_loaded=5
+provider_capacity_consistency                           PASS    sum(provider_capacity.provider_count)=6377  providers with fips=6377
+==============================================================================
+OVERALL: PASS  (27/27 passed)
+==============================================================================
