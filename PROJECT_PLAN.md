@@ -51,15 +51,15 @@
 - [x] Commit to git — "Phase 3 complete: 8 analytical SQL files + EGI view"
 
 ## Phase 3.5: Statistical Analysis (~1.5 hrs)
-- [ ] Write `python/03_statistical_analysis.py`
-- [ ] Pearson correlation matrix across burden/capacity/SVI/EGI
-- [ ] OLS regression: EGI ~ pcp_per_10k + svi_overall + rural + region
-- [ ] Bootstrap confidence intervals for top-10 EGI scores (1000 iterations)
-- [ ] Outlier detection (z-score > 2 on EGI)
-- [ ] Save `visualizations/correlation_heatmap.png`
-- [ ] Save stats summary to `data/processed/statistical_results.txt`
-- [ ] Document findings in DECISIONS.md
-- [ ] Commit to git
+- [x] Write `python/03_statistical_analysis.py`
+- [x] Pearson correlation matrix across burden/capacity/vulnerability/EGI (max pair r=0.734 burden↔vulnerability)
+- [x] OLS regression: EGI ~ pcp_per_10k + rpl_themes + is_rural + is_delta (R²=0.978; 3 of 4 significant; is_delta not significant — Delta effect fully mediated)
+- [x] Bootstrap confidence intervals for top-10 EGI scores (1000 iter, seed=42; max CI width 13.31; 9/9 adjacent pairs overlap)
+- [x] Outlier detection (z-score > 2; 4 low-side outliers, no high-side)
+- [x] Save `visualizations/correlation_heatmap.png`
+- [x] Save stats summaries: `data/processed/ols_regression_summary.txt`, `bootstrap_ci_top10.csv`, `outliers.txt`
+- [x] Findings documented in `docs/presentation_talking_points.md` "Statistical validation findings"
+- [x] Commit to git
 
 ## Phase 4: Visualizations (~3 hrs)
 - [ ] `python/02_visualize.py` — produces all charts from SQLite views

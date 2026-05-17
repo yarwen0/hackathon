@@ -1,0 +1,7 @@
+EGI statistical outliers (|z| > 2 across the 82 MS counties)
+========================================================================
+fips    county                region      egi_score  rank        z
+28081   Lee County            Other           25.63    79    -2.02
+28121   Rankin County         Other           24.91    80    -2.07
+28073   Lamar County          Pine Belt       23.61    81    -2.16
+28089   Madison County        Other           22.80    82    -2.21

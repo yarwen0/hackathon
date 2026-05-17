@@ -1,0 +1,28 @@
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:              egi_score   R-squared:                       0.978
+Model:                            OLS   Adj. R-squared:                  0.977
+Method:                 Least Squares   F-statistic:                     859.9
+Date:                Sun, 17 May 2026   Prob (F-statistic):           4.91e-63
+Time:                        00:21:45   Log-Likelihood:                -183.94
+No. Observations:                  82   AIC:                             377.9
+Df Residuals:                      77   BIC:                             389.9
+Df Model:                           4                                         
+Covariance Type:            nonrobust                                         
+===============================================================================
+                  coef    std err          t      P>|t|      [0.025      0.975]
+-------------------------------------------------------------------------------
+const          42.8443      1.111     38.568      0.000      40.632      45.056
+pcp_per_10k    -0.7037      0.036    -19.347      0.000      -0.776      -0.631
+rpl_themes     42.3187      1.083     39.093      0.000      40.163      44.474
+is_rural        4.4791      0.881      5.083      0.000       2.725       6.234
+is_delta        0.1683      0.714      0.236      0.814      -1.253       1.590
+==============================================================================
+Omnibus:                        3.782   Durbin-Watson:                   1.618
+Prob(Omnibus):                  0.151   Jarque-Bera (JB):                3.007
+Skew:                          -0.415   Prob(JB):                        0.222
+Kurtosis:                       3.437   Cond. No.                         92.5
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.

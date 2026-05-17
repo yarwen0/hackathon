@@ -52,7 +52,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 ## Challenge Requirement 3: Analysis & Insights
 
 - [x] Insights valuable to healthcare professionals → top-10 underserved counties (q06) with driver_profile (8 multi-component, 2 one-leading)
-- [ ] Insights for researchers → statistical validation (`03_statistical_analysis.py`) — PENDING Phase 3.5
+- [x] Insights for researchers → statistical validation done: r=0.734 component correlation limitation flagged; OLS shows Delta effect fully mediated by underlying components; bootstrap reveals top-5 statistical cluster
 - [x] Insights for hospital leadership → capacity gap analysis (q03) + per-county drivers (q08) showing Obesity+BP dominate, Issaquena uniquely zero providers
 - [ ] Insights for public health organizations → "tool for the Gulf South Center" framing in README + presentation — PENDING (Phase 5/6)
 
@@ -88,7 +88,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 - [x] **Advanced SQL techniques** → CTEs throughout (10 chained in q05, 6 in q08), DENSE_RANK + NTILE(5) in q02/q03/q04/q05, MIN/MAX OVER PARTITION BY in q02/q05, MIN/MAX OVER () in q03/q05, CASE chains in q04/q08, UNPIVOT via UNION ALL in q06, ROW_NUMBER() OVER PARTITION BY in q06/q07/q08, conditional MAX aggregation for pivots in q06/q08, CREATE VIEW + DROP VIEW IF EXISTS in q05, scalar max() in q04, CROSS JOIN constants in q05.
 - [x] **Data cleaning workflows** → `python/01b_data_quality_checks.py` (27 checks all PASS) + `docs/data_cleaning_report.md`
-- [ ] **Statistical analysis** → `python/03_statistical_analysis.py` (Pearson, OLS, bootstrap CI, outliers)
+- [x] **Statistical analysis** → `python/03_statistical_analysis.py` ran clean: Pearson (burden↔vulnerability r=0.734 — flagged double-counting limitation); OLS (R²=0.978, 3 of 4 predictors significant, is_delta fully mediated); Bootstrap CI (1,000 iterations, top-5 statistically clustered); z-score outliers (4 low-side hubs only)
 - [ ] **Automation** → `run_pipeline.py` regenerates entire project in one command
 - [ ] **Interactive visualizations** → Plotly choropleth saved as standalone HTML
 - [ ] **Additional research / contextual analysis** → `docs/context_and_background.md` with 3-5 cited sources
