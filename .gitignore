@@ -1,0 +1,34 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Raw data (kept out of version control; may be large)
+data/raw/*.csv
+data/raw/*.zip
+data/raw/*.xlsx
+data/raw/*.xls
+data/raw/*.json
+data/raw/*.gz
+data/raw/*.shp
+data/raw/*.geojson
+
+# SQLite transient files
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Logs
+*.log

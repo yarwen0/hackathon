@@ -1,0 +1,28 @@
+# Mississippi Health Equity Gap Index — Python dependencies
+# Pinned to major versions known to play well together on Python 3.12.
+# Tighten lower bounds on these; let patch versions float.
+
+# Core data / numerics
+pandas>=2.2,<3.0
+numpy>=1.26,<3.0
+scipy>=1.13,<2.0
+
+# Statistics
+statsmodels>=0.14,<0.16
+
+# Visualization
+plotly>=5.22,<7.0
+folium>=0.16,<1.0
+matplotlib>=3.8,<4.0
+seaborn>=0.13,<1.0
+
+# Geospatial (used for FIPS handling / county geometries)
+geopandas>=0.14,<2.0
+
+# Notebooks
+jupyter>=1.0,<2.0
+ipykernel>=6.29,<7.0
+
+# I/O
+openpyxl>=3.1,<4.0
+requests>=2.31,<3.0
