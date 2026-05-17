@@ -336,6 +336,72 @@ save to `data/raw/census_acs_county_population_ms_2022.csv`.
 **Retrieval date:** to be filled in when the key is provided and the call
 runs.
 
+**Execution results (2026-05-16):**
+- HTTP 200 once the user-supplied key was activated by clicking the
+  Census email link.
+- 82 MS counties returned, all FIPS `28xxx`, 5-char strings synthesized
+  from `state || county`.
+- Population range: 1,206 (Issaquena) → 226,541 (Hinds). State total:
+  2,958,846 — matches the published Census 2018–2022 5-year MS estimate.
+- File: `data/raw/census_acs_county_population_ms_2022.csv` — 4,051 bytes.
+
+### D-010. ZIP → County crosswalk: Census 2020 ZCTA-County relationship file
+
+**Decision:** Use the Census 2020 ZCTA-to-County Relationship File (Option B
+proposed in Phase 1) instead of the HUD USPS ZIP_COUNTY crosswalk
+(Option A originally requested) to attribute NPPES providers to counties.
+
+**URL:** `https://www2.census.gov/geo/docs/maps-data/data/rel2020/zcta520/tab20_zcta520_county20_natl.txt`
+
+**Format:** Pipe-delimited (`|`), UTF-8 with BOM, ~6.8 MB national, 47,863
+rows / 18 columns. After filtering to MS (county FIPS `28xxx`) and dropping
+rows without a ZCTA, the working subset is **771 ZCTA-county intersection
+rows covering 428 unique ZCTAs across all 82 MS counties**, saved to
+`data/raw/census_zcta_county_crosswalk_ms_2020.csv` (54.6 KB).
+
+**Vintage:** 2020 decennial Census geographies. ZCTA boundaries are
+revised only at the decennial; the 2020 file is the current authoritative
+version through the 2030 cycle.
+
+**Rationale for Option B (Census ZCTA) over Option A (HUD USPS):**
+- HUD's crosswalk requires an account, email confirmation, and login to
+  download. Adds friction without proportional gain for our purposes.
+- Census ZCTA relationship file is a direct download, no login, pure
+  Census provenance — consistent with D-009 (also Census).
+- For *provider point counts*, ZIP→county allocation method is structurally
+  less sensitive than dollar-allocations would be: most MS provider ZIPs
+  map predominantly to a single county, and the "wrong" county for a
+  multi-county ZIP usually shares the same regional health context anyway.
+
+**Multi-county ZCTA assignment rule:** When a single ZCTA spans multiple
+counties (54% of MS ZCTAs do, 230 of 428), the provider count for that
+ZCTA is attributed to the **county with the largest population** among the
+counties the ZCTA touches, where population comes from
+`census_acs_county_population_ms_2022.csv` (D-009). Reasoning: NPPES practice
+addresses are point locations; the population-largest county is the
+highest-probability actual physical-location county for any provider whose
+practice ZIP intersects multiple counties. This rule is implemented in
+Phase 2 ingestion (the crosswalk file itself stores the raw multi-row
+intersection facts so the rule is auditable).
+
+**NPPES coverage check:** 248 of 262 unique NPPES practice ZIPs (94.7%)
+match a MS ZCTA in the crosswalk — above our 90% acceptability threshold.
+
+**Unmatched ZIPs (14 total):**
+- 13 are USPS-only ZIPs without a corresponding Census ZCTA (almost all
+  PO-box-only ZIPs in Jackson, Meridian, Hattiesburg metros, e.g., `39225`,
+  `39302`, `39404`, `39407`, `39441`, `39555`, `39703`, `39710`, `39760`).
+  We accept these as unattributable and exclude them from the county
+  provider count, documented in the data cleaning report.
+- 1 is `36345`, an Alabama ZCTA (Dale/Henry/Houston counties, AL) — a
+  border ZIP that NPPES has flagged as a MS-state practice address.
+  Likely a provider whose mailing convention crosses the state line; we
+  treat this as a data-entry anomaly and exclude.
+- 1 (`33804`) is a Lakeland, FL ZIP — likely a typo by the provider.
+  Excluded.
+
+**Retrieval date:** 2026-05-16 ~21:58 local.
+
 
 
 ---

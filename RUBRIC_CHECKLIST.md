@@ -3,6 +3,27 @@
 > Every line of the official instructions mapped to a specific deliverable.
 > Update as work completes. Run a final audit before submitting Sunday.
 
+## Phase progress note (as of end of Phase 1, 2026-05-16)
+
+Phase 1 itself produces no submitted rubric deliverables — those start in
+Phase 2 (schema) and Phase 3 (queries). However, Phase 1 establishes the
+factual basis for two rubric categories:
+
+- **Data Understanding & Schema Design** — All 5 source datasets (PLACES,
+  SVI, NPPES filtered, Census ACS, ZCTA crosswalk) are now characterized:
+  row counts, column names, FIPS handling, year vintages, and known
+  anomalies are documented in `DECISIONS.md` (D-001..D-010) and
+  `QUESTIONS.md`. Schema design begins in Phase 2 with this foundation.
+- **Data Cleaning Workflows (bonus)** — Cleaning decisions made in Phase 1
+  (NPPES taxonomy filter, NPPES deactivation drop, ZCTA multi-county
+  assignment rule, 14 unmatched-ZIP exclusions, PLACES year-mix handling
+  policy, SVI duplicate-column reconciliation) are logged in DECISIONS.md
+  and will be formalized into `docs/data_cleaning_report.md` in Phase 2.
+
+Boxes below are ticked only when the actual deliverable file exists.
+
+
+
 ## Challenge Requirement 1: Data Organization & Database Design
 
 - [ ] Explored and understood datasets → see `python/01b_data_quality_checks.py` output
