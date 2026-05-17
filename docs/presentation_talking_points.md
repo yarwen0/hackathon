@@ -27,6 +27,26 @@ Every number above is verified directly against `database.db` (see
 queries used during Phase 3 Step D). Use this for: the opening slide hook,
 the README opener, and the README "key findings" section.
 
+### Statistical findings for README and limitations
+
+Pearson correlations among the three EGI components (82 MS counties):
+
+| Pair                              | r      | Interpretation                                |
+|-----------------------------------|-------:|-----------------------------------------------|
+| burden ↔ vulnerability            | 0.734  | partial double-counting (see Limitations)     |
+| capacity ↔ burden                 | 0.394  | modest — fine                                 |
+| capacity ↔ vulnerability          | 0.064  | genuinely independent — strong design signal  |
+
+**README Limitations section (verbatim usable):**
+
+> The burden and vulnerability components are moderately-to-strongly
+> correlated (r = 0.734), indicating partial double-counting — both pick up
+> structural disadvantage in Delta counties. Capacity is genuinely
+> independent of vulnerability (r = 0.064) and only modestly correlated with
+> burden (r = 0.394). Future work could apply orthogonalization (e.g., PCA-
+> derived weights) or report a "unique burden" and "unique vulnerability"
+> score after partialing out shared variance.
+
 ### Statistical validation findings (Phase 3.5)
 
 Use these in the Methods / Results / Limitations slides and in the README's

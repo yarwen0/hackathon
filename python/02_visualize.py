@@ -338,13 +338,21 @@ def visualize_drivers_grid(top10: pd.DataFrame) -> bool:
 def visualize_burden_capacity_scatter(egi: pd.DataFrame) -> bool:
     """V4 — All 82 counties; viridis color by vulnerability; danger-zone
     shading in the both-above-median quadrant; top-10 labeled with
-    Issaquena highlighted via gold star + bold label."""
+    Issaquena highlighted via gold star + bold label.
+
+    Label-overlap fixes (post first-render review):
+    - DANGER ZONE annotation moved to axes-relative bottom-right (out of
+      the danger region itself) to avoid colliding with Issaquena label.
+    - Per-county manual label offsets to resolve the upper-cluster
+      pile-ups (Tunica/Holmes, Noxubee/Sunflower/Tallahatchie).
+    - Dot size reduced 70 -> 60 to reduce dot-label encroachment.
+    """
     logger.info("=== V4: burden vs capacity scatter ===")
     fig, ax = plt.subplots(figsize=(12, 9))
     sc = ax.scatter(
         egi.burden_component, egi.capacity_component,
         c=egi.vulnerability_component, cmap="viridis",
-        s=70, edgecolor="black", linewidth=0.4, alpha=0.85,
+        s=60, edgecolor="black", linewidth=0.4, alpha=0.85,
         vmin=0, vmax=100,
     )
     cbar = plt.colorbar(sc, ax=ax)
@@ -360,19 +368,39 @@ def visualize_burden_capacity_scatter(egi: pd.DataFrame) -> bool:
     ax.axvline(med_b, color="gray", linestyle="--", alpha=0.45, linewidth=1)
     ax.axhline(med_c, color="gray", linestyle="--", alpha=0.45, linewidth=1)
     ax.fill_betweenx([med_c, max_c], med_b, max_b, color="red", alpha=0.06, zorder=0)
-    ax.text(max_b - 0.5, max_c - 0.5,
-            "DANGER ZONE\n(burden & capacity both above median)",
-            fontsize=8.5, style="italic", color="#7d0a0a",
-            ha="right", va="top", alpha=0.85)
+    # Fix A: DANGER ZONE label pinned to axes-relative bottom-right (empty area)
+    ax.text(0.97, 0.05, "DANGER ZONE\n(burden & capacity both above median)",
+            transform=ax.transAxes, ha="right", va="bottom",
+            fontsize=9, style="italic", color="#7d0a0a", alpha=0.85,
+            bbox=dict(boxstyle="round,pad=0.3", fc="white",
+                      ec="#7d0a0a", lw=0.8, alpha=0.7))
+
+    # Fix B: per-county manual offsets to break up the upper-cluster pile-ups
+    label_offsets = {
+        "Issaquena County":   (10, 6),
+        "Tunica County":      (12, 6),
+        "Holmes County":      (12, -8),
+        "Noxubee County":     (-8, 10),
+        "Sunflower County":   (-8, -10),
+        "Tallahatchie County":(10, -12),
+        "Yazoo County":       (12, 6),
+        "Quitman County":     (10, 6),
+        "Humphreys County":   (10, -6),
+        "Kemper County":      (-10, -6),
+    }
 
     # Top-10 labels (Issaquena bolder/larger)
     top10 = egi[egi.egi_rank <= 10]
     for _, row in top10.iterrows():
         is_issaquena = row.county_name == "Issaquena County"
+        dx, dy = label_offsets.get(row.county_name, (8, 6))
+        ha = "left" if dx >= 0 else "right"
+        va = "bottom" if dy >= 0 else "top"
         ax.annotate(
             row.county_name.replace(" County", ""),
             xy=(row.burden_component, row.capacity_component),
-            xytext=(8, 6), textcoords="offset points",
+            xytext=(dx, dy), textcoords="offset points",
+            ha=ha, va=va,
             fontsize=11 if is_issaquena else 9,
             fontweight="bold" if is_issaquena else "normal",
             color="#222",
