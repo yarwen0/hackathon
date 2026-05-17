@@ -249,8 +249,8 @@ downstream readers:
   top-10" should be read as "a tight cluster of 5–10 underserved Delta and
   rural Other counties" rather than a precisely ordered ranking.
 
-These findings are surfaced in `docs/presentation_talking_points.md` and
-the README, and don't require any cleaning-step changes.
+These findings are surfaced in the README and the presentation deck, and
+don't require any cleaning-step changes.
 
 ## 5. Validation results
 

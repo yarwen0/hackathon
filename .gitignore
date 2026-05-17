@@ -37,3 +37,6 @@ data/raw/*.geojson
 
 # Logs
 *.log
+
+# Hackathon reference materials (not part of the project)
+Round_1_Hackathon_Instructions.docx

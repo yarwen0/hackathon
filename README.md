@@ -79,6 +79,12 @@ The canonical SQL implementation lives in [`sql/q05_equity_gap_index.sql`](sql/q
 ![Top 10 EGI counties](visualizations/top10_bar.png)
 *Top 10 most underserved Mississippi counties — stacked bars show each component's contribution to the EGI total.*
 
+![Per-county driver breakdown](visualizations/drivers_grid.png)
+*Per-county driver breakdown for the top-10 — burden (top sub-measure), capacity (providers per 10k), and vulnerability (SVI percentile) side-by-side. Visualizes the "driver_profile" classification from `q06`.*
+
+![Burden vs capacity scatter](visualizations/burden_capacity_scatter.png)
+*All 82 Mississippi counties plotted on burden (x) × capacity (y), colored by SVI vulnerability. The top-right quadrant — high burden, low capacity — is where the top-10 EGI counties cluster; vulnerability shading shows the third pillar layered on top.*
+
 ## Statistical validation
 
 Independent validation in [`python/03_statistical_analysis.py`](python/03_statistical_analysis.py):
@@ -110,7 +116,7 @@ python run_pipeline.py
 
 `run_pipeline.py` orchestrates: data downloads → loader → quality checks → all 8 SQL queries → statistical analysis → all 5 visualizations. Wall time on a modern laptop is ~10 seconds end-to-end after raw data downloads (which take ~1 minute on broadband; NPPES is the slowest at 1.13 GB).
 
-If you just want to query the pre-built database without re-running the pipeline, `database.db` (1.4 MB) is included in the submission ZIP. A 30-second sanity-check snippet lives at the top of [`schema/data_dictionary.md`](schema/data_dictionary.md).
+If you just want to query the pre-built database without re-running the pipeline, `database.db` (2.2 MB) is included in the submission ZIP. A 30-second sanity-check snippet lives at the top of [`schema/data_dictionary.md`](schema/data_dictionary.md).
 
 ## Limitations
 
@@ -136,16 +142,18 @@ If you just want to query the pre-built database without re-running the pipeline
 
 ```
 hackathon-2026/
-├── README.md                              this file
+├── README.md                              this file (project overview, datasets, findings, setup)
 ├── DECISIONS.md                           19 numbered decisions (D-001..D-019)
 ├── requirements.txt                       Python dependencies
 ├── .env.example                           Census API key template
-├── database.db                            loaded SQLite database (ships in repo)
+├── .gitignore                             excludes venv, raw data, caches, secrets
+├── database.db                            loaded SQLite database (ships in submission ZIP)
 ├── run_pipeline.py                        one command to regenerate everything
 ├── presentation.pptx                      9-slide deck for the 6-minute talk
 ├── schema/
-│   ├── create_tables.sql                  9 tables + 9 indexes, idempotent
+│   ├── create_tables.sql                  9 tables + 9 indexes, idempotent DDL
 │   ├── data_dictionary.md                 column-by-column reference
+│   ├── er_diagram.md                      mermaid source for the ER diagram
 │   └── er_diagram.png                     rendered ER diagram
 ├── sql/
 │   ├── q01_state_overview.sql             state context (provenance + scope + top burdens)
@@ -161,24 +169,29 @@ hackathon-2026/
 │   ├── 01b_data_quality_checks.py         27 validation checks (exit non-zero on failure)
 │   ├── 02_visualize.py                    5 visualizations
 │   └── 03_statistical_analysis.py         correlation, OLS, bootstrap, outliers
-├── visualizations/                        5 visual artifacts + full ranking CSV
+├── visualizations/
+│   ├── mississippi_egi_map.png            static choropleth (PNG)
+│   ├── mississippi_egi_map.html           interactive Folium choropleth
+│   ├── top10_bar.png                      top-10 stacked component contributions
+│   ├── burden_capacity_scatter.png        burden vs capacity, colored by vulnerability
+│   ├── drivers_grid.png                   per-county driver breakdown for top-10
+│   ├── correlation_heatmap.png            three-component Pearson correlation matrix
+│   └── full_ranking.csv                   full 82-county EGI table
 ├── notebooks/
 │   └── analysis_walkthrough.ipynb         interactive end-to-end walkthrough
 ├── data/
-│   ├── raw/                               source CSVs (gitignored; pipeline-regenerable)
+│   ├── raw/                               source CSVs (small enough to ship; also pipeline-regenerable)
 │   └── processed/                         query outputs + DQ report + stats artifacts
 └── docs/
     ├── data_cleaning_report.md            per-dataset cleaning narrative
-    ├── context_and_background.md          MS health context with citations
-    ├── presentation_script.md             9-slide script with speaker notes
-    └── presentation_talking_points.md     verbatim-usable lines for the deck
+    └── context_and_background.md          MS health context with citations
 ```
 
-Every analytical and methodological decision is logged with rationale in [`DECISIONS.md`](DECISIONS.md) (D-001 through D-019). Cleaning workflow narrative including the D-010 amendment is in [`docs/data_cleaning_report.md`](docs/data_cleaning_report.md). Background research with citations is in [`docs/context_and_background.md`](docs/context_and_background.md). The 6-minute presentation script with speaker notes is in [`docs/presentation_script.md`](docs/presentation_script.md).
+Every analytical and methodological decision is logged with rationale in [`DECISIONS.md`](DECISIONS.md) (D-001 through D-019). Cleaning workflow narrative including the D-010 amendment is in [`docs/data_cleaning_report.md`](docs/data_cleaning_report.md). Background research with citations is in [`docs/context_and_background.md`](docs/context_and_background.md).
 
-## Repository
+## Submission contents
 
-**Repository:** https://github.com/[username]/hackathon-2026 (public)
+This submission ZIP contains the full project as listed in **File structure** above. Per the Round 1 instructions, dependency and build folders (`venv/`, `__pycache__/`, etc.) are excluded; the pre-built `database.db` is included so a reviewer can query without re-running the pipeline.
 
 ---
 
