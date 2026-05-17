@@ -448,8 +448,17 @@ def load_measures(conn: sqlite3.Connection, places_df: pd.DataFrame) -> int:
 
 def load_zcta_crosswalk(conn: sqlite3.Connection, zcta_df: pd.DataFrame) -> int:
     """Insert MS ZCTA-county intersection rows. is_assigned = 1 on the single
-    row per ZCTA whose county has the largest population (D-010). Population
-    is fetched back from the counties table we just loaded."""
+    row per ZCTA where the ZCTA's physical LAND AREA in that county is
+    greatest (D-010 AMENDED).
+
+    The ORIGINAL rule (largest-population county per ZCTA) systematically
+    under-attributed providers in smaller counties whose ZCTAs were shared
+    with larger neighbors. Discovered via q03 review: 16 of 82 counties
+    showed zero attributed providers, e.g. Clay County (pop 18,598) losing
+    its own county-seat ZIP 39773 (West Point) to Monroe County because
+    Monroe had a larger population. The AMENDED rule uses AREALAND_PART —
+    the physical land-area overlap between a ZCTA and a county — as the
+    more direct geographic measure of where a ZCTA actually sits."""
     # Census-native column names -> canonical schema names.
     # Defensive: the Phase 1 export lowercased zcta5/fips/county_name but
     # left the rest in Census uppercase. Map all to canonical here so the
@@ -462,17 +471,16 @@ def load_zcta_crosswalk(conn: sqlite3.Connection, zcta_df: pd.DataFrame) -> int:
         "AREALAND_PART":     "arealand_part",
     })
 
-    # Pull county populations from the DB (single source of truth).
-    pops = dict(conn.execute("SELECT fips, population FROM counties").fetchall())
-
-    # Determine assigned county per ZCTA
     df["zcta5"] = df["zcta5"].map(pad_zip5)
     df["fips"]  = df["fips"].map(pad_fips)
-    df["population"] = df["fips"].map(pops).fillna(0).astype(int)
 
-    # Largest-population row per ZCTA
-    idx_largest = df.groupby("zcta5")["population"].idxmax()
-    assigned_keys = set(zip(df.loc[idx_largest, "zcta5"], df.loc[idx_largest, "fips"]))
+    # D-010 AMENDED: assign each ZCTA to the county where its land area
+    # overlap is largest, NOT the county with the largest population.
+    # Treat NULL arealand_part as 0 (no overlap) for the comparison.
+    df["arealand_part_num"] = df["arealand_part"].fillna(0).astype("int64")
+    idx_largest_area = df.groupby("zcta5")["arealand_part_num"].idxmax()
+    assigned_keys = set(zip(df.loc[idx_largest_area, "zcta5"],
+                             df.loc[idx_largest_area, "fips"]))
 
     rows = []
     multi_county = (df.groupby("zcta5").size() > 1).sum()

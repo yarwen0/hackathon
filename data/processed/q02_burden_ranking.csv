@@ -1,0 +1,83 @@
+fips,county_name,region,population,burden_score,measures_included,burden_rank,burden_quintile
+28053,"Humphreys County",Delta,7744,78.92,10,1,1
+28163,"Yazoo County",Delta,27467,73.29,10,2,1
+28125,"Sharkey County",Delta,3910,72.95,10,3,1
+28119,"Quitman County",Delta,6113,72.5,10,4,1
+28051,"Holmes County",Delta,16848,72.03,10,5,1
+28055,"Issaquena County",Delta,1206,71.92,10,6,1
+28143,"Tunica County",Delta,9787,71.61,10,7,1
+28077,"Lawrence County",Other,11933,66.15,10,8,1
+28063,"Jefferson County",Other,7207,64.26,10,9,1
+28027,"Coahoma County",Delta,21264,62.98,10,10,1
+28123,"Scott County",Other,27943,62.13,10,11,1
+28133,"Sunflower County",Delta,25867,61.68,10,12,1
+28103,"Noxubee County",Other,10261,61.2,10,13,1
+28135,"Tallahatchie County",Delta,12621,60.66,10,14,1
+28013,"Calhoun County",Other,13193,59.97,10,15,1
+28099,"Neshoba County",Other,28970,59.91,10,16,1
+28021,"Claiborne County",Other,9044,59.64,10,17,1
+28005,"Amite County",Other,12683,59.46,10,18,2
+28129,"Smith County",Other,14310,58.21,10,19,2
+28011,"Bolivar County",Delta,30688,57.88,10,20,2
+28107,"Panola County",Delta,33157,57.53,10,21,2
+28153,"Wayne County","Pine Belt",19760,56.91,10,22,2
+28161,"Yalobusha County",Other,12499,56.86,10,23,2
+28113,"Pike County",Other,40098,56.59,10,24,2
+28157,"Wilkinson County",Other,8531,56.53,10,25,2
+28091,"Marion County","Pine Belt",24362,56.4,10,26,2
+28151,"Washington County",Delta,44604,56.34,10,27,2
+28017,"Chickasaw County",Other,17024,56.25,10,28,2
+28083,"Leflore County",Delta,27920,55.96,10,29,2
+28093,"Marshall County",Other,33980,55.78,10,30,2
+28065,"Jefferson Davis County",Other,11291,55.54,10,31,2
+28097,"Montgomery County",Other,9803,55.17,10,32,2
+28001,"Adams County",Other,29425,54.5,10,33,2
+28037,"Franklin County",Other,7690,54.45,10,34,2
+28111,"Perry County","Pine Belt",11511,54.12,10,35,3
+28141,"Tishomingo County",Other,18837,53.39,10,36,3
+28139,"Tippah County",Other,21769,53.19,10,37,3
+28159,"Winston County",Other,17741,53.19,10,37,3
+28147,"Walthall County","Pine Belt",13888,53.03,10,38,3
+28015,"Carroll County",Delta,9930,52.33,10,39,3
+28043,"Grenada County",Other,21474,51.88,10,40,3
+28025,"Clay County",Other,18598,51.61,10,41,3
+28003,"Alcorn County",Other,34717,51.19,10,42,3
+28079,"Leake County",Other,21335,50.83,10,43,3
+28009,"Benton County",Other,7637,50.57,10,44,3
+28145,"Union County",Other,27880,50.12,10,45,3
+28041,"Greene County",Other,13672,49.76,10,46,3
+28023,"Clarke County",Other,15553,48.89,10,47,3
+28101,"Newton County",Other,21275,48.7,10,48,3
+28095,"Monroe County",Other,34168,48.57,10,49,3
+28061,"Jasper County",Other,16320,48.05,10,50,4
+28069,"Kemper County",Other,8980,47.08,10,51,4
+28117,"Prentiss County",Other,24945,46.89,10,52,4
+28029,"Copiah County",Other,28210,46.62,10,53,4
+28007,"Attala County",Other,17842,45.97,10,54,4
+28067,"Jones County",Other,67152,45.75,10,55,4
+28115,"Pontotoc County",Other,31202,44.65,10,56,4
+28075,"Lauderdale County",Other,72741,44.44,10,57,4
+28039,"George County",Other,24547,43.81,10,58,4
+28127,"Simpson County",Other,25889,43.33,10,59,4
+28085,"Lincoln County",Other,34855,43.17,10,60,4
+28131,"Stone County","Pine Belt",18360,43.02,10,61,4
+28109,"Pearl River County","Pine Belt",56351,42.58,10,62,4
+28019,"Choctaw County",Other,8208,41.9,10,63,4
+28031,"Covington County",Other,18323,41.21,10,64,4
+28057,"Itawamba County",Other,23888,37.37,10,65,4
+28035,"Forrest County","Pine Belt",77917,35.59,10,66,5
+28059,"Jackson County",Coastal,143721,35.27,10,67,5
+28137,"Tate County",Delta,28094,35.23,10,68,5
+28047,"Harrison County",Coastal,208748,35.09,10,69,5
+28155,"Webster County",Other,9942,34.63,10,70,5
+28045,"Hancock County",Coastal,46010,33.25,10,71,5
+28105,"Oktibbeha County",Other,51388,33.17,10,72,5
+28049,"Hinds County",Other,226541,32.96,10,73,5
+28087,"Lowndes County",Other,58547,32.38,10,74,5
+28149,"Warren County",Delta,44341,32.19,10,75,5
+28081,"Lee County",Other,83343,28.2,10,76,5
+28073,"Lamar County","Pine Belt",64425,26.59,10,77,5
+28071,"Lafayette County",Other,56172,23.45,10,78,5
+28033,"DeSoto County",Delta,186214,19.28,10,79,5
+28121,"Rankin County",Other,157185,16.63,10,80,5
+28089,"Madison County",Other,109257,6.11,10,81,5

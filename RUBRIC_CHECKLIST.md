@@ -40,21 +40,21 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Challenge Requirement 2: SQL & Data Querying
 
-- [ ] Database queryable in SQL → `database.db`
-- [ ] Trend identification → q01, q02, q03
-- [ ] Aggregated metrics → q01, q07
-- [ ] Geographic region comparison → q07 (Delta vs non-Delta)
-- [ ] Population group analysis → q04 (vulnerability tiers)
-- [ ] Public health indicators analyzed → all 8 queries
-- [ ] Meaningful SQL queries included → 8 commented `.sql` files in `/sql/`
-- [ ] Python/Pandas supporting analysis → `python/02_visualize.py`, `python/03_statistical_analysis.py`
+- [x] Database queryable in SQL → `database.db`
+- [x] Trend identification → q01 (state-mean burden across 10 measures), q02 (county burden ranking), q03 (county capacity ranking) — DONE
+- [x] Aggregated metrics → q01 (state scope + capacity totals) — DONE; q07 pending
+- [ ] Geographic region comparison → q07 (Delta vs non-Delta) — PENDING
+- [x] Population group analysis → q04 (vulnerability quintiles + dominant SVI theme per county) — DONE
+- [~] Public health indicators analyzed → q01..q05 done (5 of 8 queries committed)
+- [~] Meaningful SQL queries included → 5 of 8 `.sql` files done (q01-q05); q06-q08 pending
+- [ ] Python/Pandas supporting analysis → `python/02_visualize.py`, `python/03_statistical_analysis.py` — PENDING (Phase 3.5/4)
 
 ## Challenge Requirement 3: Analysis & Insights
 
-- [ ] Insights valuable to healthcare professionals → top-10 underserved counties (q06)
-- [ ] Insights for researchers → statistical validation (`03_statistical_analysis.py`)
-- [ ] Insights for hospital leadership → capacity gap analysis (q03)
-- [ ] Insights for public health organizations → "tool for the Gulf South Center" framing in README + presentation
+- [~] Insights valuable to healthcare professionals → top-10 underserved counties (q06 pending; v_equity_gap_index from q05 already supplies the top-10 ordering)
+- [ ] Insights for researchers → statistical validation (`03_statistical_analysis.py`) — PENDING
+- [x] Insights for hospital leadership → capacity gap analysis (q03 done; Issaquena = zero providers, Carroll/Greene/Benton next-worst)
+- [ ] Insights for public health organizations → "tool for the Gulf South Center" framing in README + presentation — PENDING (Phase 5/6)
 
 ## Challenge Requirement 4: Visualization
 
@@ -86,7 +86,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## BONUS CONSIDERATIONS (ALL SIX MUST BE TICKED)
 
-- [ ] **Advanced SQL techniques** → CTEs in q05, RANK/NTILE/PERCENT_RANK in q02/q03/q06
+- [~] **Advanced SQL techniques** → CTEs in q05 (10 chained), DENSE_RANK + NTILE(5) in q02/q03/q04/q05, MIN/MAX OVER PARTITION BY in q02/q05, MIN/MAX OVER () in q03/q05, CASE in q04, CREATE VIEW in q05. (q06/q07/q08 pending; PERCENT_RANK candidate for one of them.)
 - [x] **Data cleaning workflows** → `python/01b_data_quality_checks.py` (27 checks all PASS) + `docs/data_cleaning_report.md`
 - [ ] **Statistical analysis** → `python/03_statistical_analysis.py` (Pearson, OLS, bootstrap CI, outliers)
 - [ ] **Automation** → `run_pipeline.py` regenerates entire project in one command

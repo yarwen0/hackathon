@@ -3,6 +3,23 @@
 Running parking lot of things to confirm, decide, or ask about. Resolved
 items get a strikethrough and a one-line resolution note.
 
+## Resolved during Phase 3
+
+- **D-010 largest-population rule produced 20% zero-provider counties.**
+  Discovered while reviewing q03 (capacity ranking) output: 16 of 82
+  counties showed zero attributed primary-care providers. Diagnostic
+  workflow: (1) review of q03 surfaced implausibly tied top-5 at
+  capacity_gap_score=100; (2) drilled into one example county (Clay,
+  pop 18,598) to inspect its ZCTA crosswalk rows; (3) discovered Clay's
+  county-seat ZIP 39773 (West Point) was being assigned to Monroe County
+  purely because Monroe's total population is larger, despite 95% of ZIP
+  39773's land area sitting in Clay; (4) root-caused to the
+  largest-population assignment rule systematically favoring larger
+  neighbors. Resolved by amending D-010 to use largest-AREALAND_PART
+  instead. Reload took 0.66s; zero-provider count dropped 16 → 1
+  (Issaquena, pop 1,206 — plausibly real). See D-010 AMENDMENT in
+  DECISIONS.md and the new section in docs/data_cleaning_report.md.
+
 ## Resolved during Phase 1
 
 - **Census ACS key activation:** First call returned the `invalid_key.html`
@@ -59,6 +76,22 @@ items get a strikethrough and a one-line resolution note.
   check script (Phase 2 Step F) must add a hard assertion that all 82
   counties have non-NULL lat/lon — fail with non-zero exit code if any
   county is missing a centroid.
+
+- **q06 must include a `driver_profile` column to make D-019 transparency
+  visible, not just available.** D-019 promises transparency on
+  single-component-driven counties by exposing all 3 components in
+  `v_equity_gap_index` (D-018). To make this transparency *visible* rather
+  than just *available*, q06 (top-10 underserved) must derive a column:
+  ```
+  CASE
+      WHEN (max_component - second_max_component) > 30 THEN 'single-component dominant'
+      WHEN (max_component - second_max_component) > 15 THEN 'one component leading'
+      ELSE 'multi-component'
+  END AS driver_profile
+  ```
+  This lets a judge or stakeholder reading the top-10 table immediately see
+  whether each top-ranked county is "stacked" across all 3 pillars or
+  driven by one extreme component (e.g., Issaquena's capacity_component=100).
 
 - **Some NPPES ZIPs may be 9-digit (ZIP+4) strings without dash.**
   Quick scan shows 9-character ZIPs in the raw column. We slice to first 5

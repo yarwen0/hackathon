@@ -37,18 +37,18 @@
 - [x] Commit to git
 
 ## Phase 3: Analytical SQL (~4 hrs)
-- [ ] `sql/q01_state_overview.sql` — MS vs national baseline
-- [ ] `sql/q02_burden_ranking.sql` — counties ranked by burden (RANK, NTILE)
-- [ ] `sql/q03_capacity_ranking.sql` — counties ranked by capacity scarcity (window functions)
-- [ ] `sql/q04_vulnerability_layer.sql` — SVI joined to health data (JOINs, CASE)
-- [ ] `sql/q05_equity_gap_index.sql` — **headline query** with CTEs, normalization, weighted aggregation
-- [ ] `sql/q06_top_underserved.sql` — top 10 with component breakdown
+- [x] `sql/q01_state_overview.sql` — MS-wide context (provenance + scope + top burdens)
+- [x] `sql/q02_burden_ranking.sql` — counties ranked by burden (DENSE_RANK, NTILE, per-measure normalization)
+- [x] `sql/q03_capacity_ranking.sql` — counties ranked by capacity scarcity (DENSE_RANK, NTILE, inverted min-max)
+- [x] `sql/q04_vulnerability_layer.sql` — SVI joined to health data (4-table JOINs, CASE for dominant_theme, NTILE)
+- [x] `sql/q05_equity_gap_index.sql` — **HEADLINE** — 10-CTE composite, DENSE_RANK, CREATE VIEW v_equity_gap_index; #1 = Issaquena (EGI 87.35), verified
+- [ ] `sql/q06_top_underserved.sql` — top 10 with component breakdown + driver_profile (per QUESTIONS.md note)
 - [ ] `sql/q07_regional_patterns.sql` — Delta vs non-Delta, rural vs urban
 - [ ] `sql/q08_drivers_analysis.sql` — per-county driver identification
-- [ ] All queries have header comments (purpose, tables used, output meaning)
-- [ ] All queries tested against database.db; results saved as CSVs in `data/processed/`
-- [ ] Update DECISIONS.md (weighting rationale, normalization method)
-- [ ] Commit to git
+- [x] q01..q05 have header comments (purpose, tables, techniques, output, design)
+- [x] q01..q05 tested against database.db; CSVs saved to `data/processed/`
+- [x] DECISIONS.md updated (D-016 weighting, D-017 view, D-018 component exposure, D-019 no floor)
+- [ ] Commit to git — q06-q08 deferred to tomorrow morning per user instruction
 
 ## Phase 3.5: Statistical Analysis (~1.5 hrs)
 - [ ] Write `python/03_statistical_analysis.py`

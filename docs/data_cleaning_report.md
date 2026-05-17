@@ -89,9 +89,70 @@ and the load fails loudly.
 |---|---|---|---|
 | 1 | Pipe-delimited national file (~6.8 MB, 47,863 rows) parsed with UTF-8 BOM handling | Phase 1 | Census file uses `|` as separator and ships a UTF-8 BOM. |
 | 2 | Filtered to MS county FIPS `28xxx` | Phase 1 | 771 MS ZCTA-county intersection rows (428 unique ZCTAs across all 82 counties). |
-| 3 | Largest-population assignment computed at load | Loader `load_zcta_crosswalk()` (D-010) | 230 of 428 MS ZCTAs span multiple counties; the population-largest county is the highest-probability practice location. |
+| 3 | **Largest-AREALAND_PART** assignment computed at load (D-010 AMENDED) | Loader `load_zcta_crosswalk()` | 230 of 428 MS ZCTAs span multiple counties; the county with the largest land-area overlap is the most direct geographic measure of where the ZCTA physically sits. Replaces the original largest-population rule (see §2.6 below). |
 | 4 | `is_assigned = 1` flag persisted on exactly one row per ZCTA | Loader `load_zcta_crosswalk()` | Other intersection rows kept with `is_assigned = 0` so the raw fact is auditable. |
 | 5 | Provider→county join reads `is_assigned = 1` rows back from the DB | Loader `load_providers()` | Single source of truth — the rule isn't re-implemented in two places. |
+
+### 2.6 Mid-analysis discovery: D-010 attribution rule amended
+
+While reviewing the first run of `sql/q03_capacity_ranking.sql` we noticed
+**16 of 82 counties (20%) showed zero attributed primary-care providers**
+and the top of the capacity-gap ranking was a five-way tie at the maximum
+score of 100. Implausible: Mississippi has 6,404 active NPPES primary-care
+providers; an even distribution would put ~78 per county.
+
+**Diagnostic walkthrough:**
+
+1. Spotted the issue in q03 output (top 5 all at score 100; 16 zero-counts).
+2. Picked one example county (Clay, pop 18,598, county seat West Point)
+   and inspected its ZCTA-crosswalk rows.
+3. Found that Clay's county-seat ZIP **39773 (West Point)** had been
+   assigned to **Monroe County** purely because Monroe's total population
+   (34,168) was larger than Clay's — despite 95% of ZIP 39773's land area
+   physically sitting inside Clay.
+4. Root cause: the original D-010 rule
+   ("assign each ZCTA to the county whose total population is largest
+   among the counties the ZCTA touches") systematically biased toward
+   larger neighbors, stripping providers from smaller counties whose
+   ZIPs happened to extend into a more populous county.
+
+**Fix:** amended D-010 to use the **largest AREALAND_PART** (physical
+land-area overlap between ZCTA and county) instead of largest county
+population. A 5-line change in `load_zcta_crosswalk()`; loader reload
+took 0.66 s.
+
+**Validation after the amendment:**
+
+| Metric                                 | Before | After |
+|----------------------------------------|-------:|------:|
+| Counties with 0 attributed providers   | 16     | **1** |
+| q03 ties at capacity_gap_score = 100   | 5      | **1** |
+| Clay County total providers            | 0      | **128** |
+| Sum of provider_capacity counts        | 6,377  | 6,377 (unchanged — redistribution only) |
+| Provider-capacity consistency check    | PASS   | PASS  |
+| 27/27 DQ checks                        | PASS   | PASS  |
+
+The remaining zero-provider county is **Issaquena (population 1,206)** — the
+smallest county in Mississippi and a chronic federally-designated Health
+Professional Shortage Area. The zero is plausibly real.
+
+**Cross-validation:** Starkville ZIP 39759 (816 M sq m in Oktibbeha,
+85 K sq m in Clay) is still correctly assigned to Oktibbeha under the
+new rule — Starkville IS physically in Oktibbeha. The amendment doesn't
+introduce wrong attributions; it only corrects systematic
+under-attribution to smaller counties whose ZCTAs extended into them.
+
+**Top-5 worst-capacity counties after the amendment** are all plausibly
+underserved rural MS counties (Issaquena, Carroll, Greene, Benton,
+Copiah). **Bottom-3 best-capacity** are Alcorn (Corinth region), Lee
+(Tupelo — North MS Medical Center), and Hinds (Jackson — UMMC), all
+real-world MS healthcare hubs.
+
+This discovery is the strongest single argument for the iterative-validation
+approach used throughout this project: the analysis was reviewed, an
+anomaly was traced to its root cause, the rule was amended, and the
+analysis was re-run with the corrected rule — all within a 90-minute window
+of the original loader's successful execution.
 
 ## 3. Cross-dataset reconciliation
 

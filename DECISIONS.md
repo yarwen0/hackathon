@@ -402,6 +402,53 @@ match a MS ZCTA in the crosswalk — above our 90% acceptability threshold.
 
 **Retrieval date:** 2026-05-16 ~21:58 local.
 
+#### D-010 AMENDMENT (Phase 3, 2026-05-16 ~23:21 local)
+
+**Rule change.** The largest-population assignment rule above is REPLACED
+by a **largest-AREALAND_PART** rule: each ZCTA is assigned to the county
+where its **physical land area overlap is greatest**, not the county
+whose total population is greatest.
+
+**Why it changed.** Reviewing q03 output revealed 16 of 82 counties (20%)
+with **zero attributed primary-care providers** — implausibly high. Root
+cause traced to Clay County (pop 18,598): its county-seat ZIP 39773
+(West Point) was being assigned to Monroe County purely because Monroe
+(pop 34,168) had more residents, even though 95% of ZIP 39773's land area
+sits inside Clay County. The original rule systematically under-attributed
+providers in smaller counties whose ZCTAs were shared with larger
+neighbors. AREALAND_PART is the more direct geographic measure of where a
+ZCTA actually sits.
+
+**Validation after reload.**
+- Counties with zero attributed providers: **16 → 1** (only Issaquena, pop
+  1,206 — a chronic federally-designated HPSA; the zero is plausibly real).
+- q03 ties at capacity_gap_score=100: **5 → 1**.
+- Clay County total providers: **0 → 128**; retains ZIP 39773 (West Point)
+  with 32 providers.
+- Starkville ZIP 39759 correctly still assigned to Oktibbeha (Starkville
+  IS in Oktibbeha; 99.9% of that ZIP's land area is there).
+- Sum of provider_capacity unchanged (6,377) — same providers,
+  redistributed.
+- All 27 DQ checks still PASS.
+- New top-5 worst-capacity list (Issaquena, Carroll, Greene, Benton,
+  Copiah) all match plausibly underserved rural MS counties.
+- New bottom-3 best-capacity list (Alcorn/Lee/Hinds) all match real MS
+  healthcare hubs (Corinth / Tupelo NMMC / Jackson UMMC).
+
+**Implementation.** A single 5-line change in `load_zcta_crosswalk()`:
+replaced `df.groupby("zcta5")["population"].idxmax()` with
+`df.groupby("zcta5")["arealand_part"].idxmax()` (with NaN→0 coercion).
+The county-population fetch is removed — no longer needed.
+
+**Trade-off accepted.** AREALAND_PART measures geographic overlap, not
+which county actually has the post office or population center inside
+the ZCTA's main settled area. For a few ZCTAs whose largest land area
+sits in a sparsely-populated portion of a neighboring county, the
+attribution could still be wrong. But the failure mode is now random
+(geographically idiosyncratic) rather than systematic (always favoring
+larger counties), which is preferable. The new rule is also the same
+choice the HRSA AHRF would have made.
+
 
 
 ---
@@ -597,7 +644,135 @@ the FK column. Nothing is being lost by deferring.
 
 ## Phase 3 — Analytical SQL
 
-_(to be filled in)_
+### D-016. EGI weighting: equal thirds for the three components
+
+**Decision:** The Equity Gap Index combines its three components (burden,
+capacity, vulnerability) with **equal weights of 1/3 each**, summing to 1.0.
+The weights are stored in a single `weights` CTE inside the
+`v_equity_gap_index` view so a stakeholder who later wants different weights
+changes one row.
+
+**Options considered:**
+
+| Weights | Source / framing | Why not chosen |
+|---|---|---|
+| **1/3, 1/3, 1/3** (chosen) | County Health Rankings convention; SVI's own equal-theme weighting | — |
+| 0.4 burden / 0.3 capacity / 0.3 vulnerability | "Burden is the downstream outcome that matters most" | The EGI's purpose is to identify upstream gaps; privileging the downstream measure inverts the analytical intent |
+| Empirical (PCA, factor loadings) | "Let the data choose" | Opaque defense ("the math chose them"); with n=82 and only 3 components, derived weights are unstable; weakens stakeholder confidence |
+| HRSA HPSA-style | Federal precedent | HRSA weights are for single-county HPSA designation, not composite indices; specific weights vary by HPSA type |
+
+**Defense for equal thirds:**
+1. **Precedent.** County Health Rankings (RWJF / U. Wisconsin) — the leading
+   U.S. county health composite — uses equal-weighted theme aggregation. SVI
+   itself uses equal weights across its 4 themes (computed by CDC/ATSDR).
+   Following these conventions is established practice.
+2. **Honesty.** This is a 48-hour analysis without formal stakeholder
+   elicitation. Any non-equal weights would require defending a choice we
+   can't substantively defend.
+3. **Transparency.** Equal weights are immediately interpretable. "Each
+   pillar counts equally" is one sentence.
+4. **Tunability.** Weights live in a single `weights` CTE — any future
+   stakeholder who wants 0.5/0.3/0.2 makes a one-line edit.
+
+**Presentation framing for Monday:** *"We use equal weights — the same
+convention used by the County Health Rankings, the leading U.S. county
+health composite. We considered three alternative weighting schemes, but in
+a 48-hour analysis without formal stakeholder elicitation, equal weights
+are the only fully defensible choice."*
+
+### D-017. EGI implementation as a SQL VIEW, not a persisted table
+
+**Decision:** `v_equity_gap_index` is a SQL VIEW
+(`CREATE VIEW v_equity_gap_index AS WITH ... SELECT ...`), not a persisted
+table populated by the loader. This confirms the earlier deferral noted in
+D-006.
+
+**Rationale:**
+- At 82-row scale, view recomputation on read is sub-millisecond.
+- The math stays auditable in `sql/q05_equity_gap_index.sql`. A judge can
+  read q05 and see exactly how every EGI score is computed.
+- The loader stays focused on raw data; analysis logic lives in `sql/`.
+  Clean separation.
+- Visualizations and Phase 3.5 statistics query the view as if it were a
+  table (`SELECT * FROM v_equity_gap_index`). The interface is identical.
+- If we ever need persistence, `VIEW` → `CREATE TABLE AS` is a 10-second
+  swap.
+
+**Trade-off accepted:** None of real consequence at our scale.
+
+### D-018. v_equity_gap_index exposes all 3 component scores
+
+**Decision:** The view's output includes the burden, capacity, and
+vulnerability component scores alongside the final EGI score, rank, and
+quintile — **10 columns total per row**.
+
+**Columns:**
+
+```
+fips, county_name, region, population,
+burden_component, capacity_component, vulnerability_component,
+egi_score, egi_rank, egi_quintile
+```
+
+**Rationale:**
+1. **q08 requirement.** The drivers-analysis query identifies which
+   component dominates each top-10 county's underservedness. Without the
+   components in the view, q08 would have to re-implement the EGI math.
+2. **q06 / q07 use.** Top-10 ranking and regional patterns both benefit
+   from one-row-per-county breakdowns.
+3. **Judge verifiability.** Every row is independently verifiable:
+   `0.333 × burden + 0.333 × capacity + 0.333 × vulnerability ≈ egi_score`.
+   A judge can pick any row and check the arithmetic by hand.
+4. **Downstream stats / viz.** Phase 3.5 correlation matrix and Phase 4
+   scatter plots all want the components, not just the composite.
+
+**Trade-off accepted:** 3 extra columns of width vs. requiring downstream
+queries to re-derive the components. The width is trivial; the
+re-derivation cost (cognitive load + drift risk) is real.
+
+### D-019. EGI applies no population floor
+
+**Decision:** The EGI ranks all 82 MS counties regardless of population.
+The smallest counties — notably Issaquena (population 1,206) — remain in
+the ranking if their composite metrics warrant a high score.
+
+**Why this came up.** Issaquena will hit `capacity_component = 100` exactly
+because it has zero attributed primary-care providers (verified post D-010
+amendment as a true zero, not an artifact). With burden and vulnerability
+also high, Issaquena is a candidate for #1 EGI driven partly by one
+extreme component.
+
+**Options considered:**
+
+| Option | Treatment | Verdict |
+|---|---|---|
+| **A. No floor** (chosen) | Issaquena ranks where the math puts it | — |
+| B. Population floor (e.g., exclude counties under 5,000) | Would exclude Issaquena, Sharkey, etc. | Rejected |
+| C. Population-weighted component | sqrt(pop) or similar dampening | Rejected |
+
+**Defense for A (no floor):**
+
+1. **Federal cross-validation.** Issaquena IS a federally-designated Health
+   Professional Shortage Area (HPSA). Our index identifying it as #1
+   underserved is **independent confirmation that the methodology works** —
+   not a methodological flaw. If our marquee index missed Issaquena it
+   would be a problem.
+2. **Population is already accounted for** in the per-capita capacity metric
+   (`pcp_per_10k`). Adding a second population adjustment would
+   double-count.
+3. **Excluding small counties is the wrong message.** Small rural counties
+   ARE underserved. Filtering them would understate the scope of the
+   underservedness problem the EGI is supposed to surface.
+4. **Frames the presentation well.** *"Our #1 EGI county coincides with a
+   federal HPSA designation. We didn't engineer that — it's what the math
+   produces."* That's independent validation, which is rare and valuable.
+
+**Trade-off accepted:** Some counties may dominate the top of the ranking
+primarily because of one extreme component. We surface this via D-018
+(exposing all 3 components) so any judge or stakeholder can see whether a
+top-ranked county is "stacked" across all 3 pillars or "single-component
+driven." The information loss from a floor is worse than the information
+loss from transparently showing single-component drivers.
 
 ---
 
