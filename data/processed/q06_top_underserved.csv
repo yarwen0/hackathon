@@ -1,0 +1,11 @@
+fips,county_name,region,population,burden_component,capacity_component,vulnerability_component,egi_score,egi_rank,dominant_component,driver_profile
+28055,"Issaquena County",Delta,1206,71.92,100.0,90.12,87.35,1,Capacity,multi-component
+28051,"Holmes County",Delta,16848,72.03,85.38,96.3,84.57,2,Vulnerability,multi-component
+28163,"Yazoo County",Delta,27467,73.29,81.38,97.53,84.07,3,Vulnerability,"one component leading"
+28143,"Tunica County",Delta,9787,71.61,88.39,87.65,82.55,4,Capacity,multi-component
+28053,"Humphreys County",Delta,7744,78.92,68.2,100.0,82.37,5,Vulnerability,"one component leading"
+28103,"Noxubee County",Other,10261,61.2,83.39,91.36,78.65,6,Vulnerability,multi-component
+28119,"Quitman County",Delta,6113,72.5,72.11,85.19,76.6,7,Vulnerability,multi-component
+28133,"Sunflower County",Delta,25867,61.68,80.96,82.72,75.12,8,Vulnerability,multi-component
+28135,"Tallahatchie County",Delta,12621,60.66,80.49,81.48,74.21,9,Vulnerability,multi-component
+28069,"Kemper County",Other,8980,47.08,87.34,86.42,73.61,10,Capacity,multi-component

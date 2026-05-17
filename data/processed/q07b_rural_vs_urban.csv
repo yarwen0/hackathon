@@ -1,0 +1,3 @@
+group_name,county_count,mean_burden,mean_capacity,mean_vulnerability,mean_egi,max_egi,top_egi_county
+"Rural (pop < 50k)",67,54.06,75.14,54.93,61.37,87.35,"Issaquena County"
+"Urban (pop >= 50k)",15,30.5,51.0,27.98,36.49,49.36,"Lauderdale County"

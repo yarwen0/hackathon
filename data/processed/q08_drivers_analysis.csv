@@ -1,0 +1,11 @@
+fips,county_name,egi_rank,top_burden_measure_1,top_burden_measure_2,has_zero_providers,dominant_svi_theme
+28055,"Issaquena County",1,"Health Insurance","High Blood Pressure",1,"Housing Type & Transportation"
+28051,"Holmes County",2,"High Blood Pressure",Obesity,0,"Racial & Ethnic Minority Status"
+28163,"Yazoo County",3,Obesity,"High Blood Pressure",0,"Housing Type & Transportation"
+28143,"Tunica County",4,Obesity,"High Blood Pressure",0,"Racial & Ethnic Minority Status"
+28053,"Humphreys County",5,Obesity,"High Blood Pressure",0,"Socioeconomic Status"
+28103,"Noxubee County",6,"High Blood Pressure",Obesity,0,"Household Characteristics"
+28119,"Quitman County",7,Obesity,"High Blood Pressure",0,"Socioeconomic Status"
+28133,"Sunflower County",8,Obesity,"High Blood Pressure",0,"Racial & Ethnic Minority Status"
+28135,"Tallahatchie County",9,"High Blood Pressure","Health Insurance",0,"Socioeconomic Status"
+28069,"Kemper County",10,Obesity,"High Blood Pressure",0,"Socioeconomic Status"

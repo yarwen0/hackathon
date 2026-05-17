@@ -42,13 +42,13 @@
 - [x] `sql/q03_capacity_ranking.sql` — counties ranked by capacity scarcity (DENSE_RANK, NTILE, inverted min-max)
 - [x] `sql/q04_vulnerability_layer.sql` — SVI joined to health data (4-table JOINs, CASE for dominant_theme, NTILE)
 - [x] `sql/q05_equity_gap_index.sql` — **HEADLINE** — 10-CTE composite, DENSE_RANK, CREATE VIEW v_equity_gap_index; #1 = Issaquena (EGI 87.35), verified
-- [ ] `sql/q06_top_underserved.sql` — top 10 with component breakdown + driver_profile (per QUESTIONS.md note)
-- [ ] `sql/q07_regional_patterns.sql` — Delta vs non-Delta, rural vs urban
-- [ ] `sql/q08_drivers_analysis.sql` — per-county driver identification
-- [x] q01..q05 have header comments (purpose, tables, techniques, output, design)
-- [x] q01..q05 tested against database.db; CSVs saved to `data/processed/`
+- [x] `sql/q06_top_underserved.sql` — top 10 with component breakdown + driver_profile (UNPIVOT + ROW_NUMBER; 8/10 multi-component, 2 "one leading", 0 single-dominant)
+- [x] `sql/q07_regional_patterns.sql` — Delta vs non-Delta + rural vs urban (2 result sets; Delta mean EGI 69.56 vs Non-Delta 53.24; Rural 61.37 vs Urban 36.49)
+- [x] `sql/q08_drivers_analysis.sql` — per-county drivers for top-10 (6 CTEs; Obesity + BP dominate; Issaquena = only county with has_zero_providers=1)
+- [x] All 8 queries have header comments (purpose, tables, techniques, output, design)
+- [x] All 8 queries tested against database.db; 9 CSVs saved to `data/processed/`
 - [x] DECISIONS.md updated (D-016 weighting, D-017 view, D-018 component exposure, D-019 no floor)
-- [ ] Commit to git — q06-q08 deferred to tomorrow morning per user instruction
+- [x] Commit to git — "Phase 3 complete: 8 analytical SQL files + EGI view"
 
 ## Phase 3.5: Statistical Analysis (~1.5 hrs)
 - [ ] Write `python/03_statistical_analysis.py`
