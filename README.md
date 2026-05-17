@@ -96,11 +96,13 @@ Independent validation in [`python/03_statistical_analysis.py`](python/03_statis
 
 ## Setup
 
-Python 3.12 and SQLite. From a clean clone:
+**Just want to query the database?** No Python needed — `database.db` is a plain SQLite file. Open it with `sqlite3 database.db` or any SQLite browser; a 30-second sanity-check snippet lives at the top of [`schema/data_dictionary.md`](schema/data_dictionary.md).
+
+**Want to re-run the pipeline?** Python 3.10 or newer (developed and tested on 3.12; Python 3.14 was avoided because the scientific stack hadn't caught up as of May 2026 — see `DECISIONS.md` D-001). From a clean clone:
 
 ```bash
-# 1. Create venv (Python 3.12 specifically — see DECISIONS.md D-001)
-python3.12 -m venv venv
+# 1. Create venv
+python3 -m venv venv
 source venv/bin/activate
 
 # 2. Install dependencies
