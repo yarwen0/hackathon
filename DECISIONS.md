@@ -1,10 +1,50 @@
 # Decisions Log
 
-Every judgment call made during this project, with rationale. The point is that
-every choice should be defensible during the Monday presentation Q&A.
+Every judgment call made during this project, with rationale. Every choice is
+defensible during the Monday presentation Q&A.
 
-Updated in real time as decisions are made. Newest entries at the bottom of each
-section.
+## How to read this document
+
+Entries are numbered **D-001 through D-019** and grouped by project phase.
+Each entry has the same shape:
+
+- **Decision** — one sentence that captures what was chosen
+- **Rationale** — why; usually with options considered and why they were rejected
+- **Trade-off accepted** — what we knowingly gave up
+- Often: **Implementation note**, **Validation results**, or an **Amendment** sub-block
+
+When a decision is amended after first commit (only happened once — D-010), an
+`AMENDMENT` sub-block records the change with date, reason, validation, and the
+diff in human terms. The original decision text is preserved above the amendment.
+
+## Table of contents
+
+### Phase 0 — Setup
+- [D-001](#d-001-python-312-homebrew-over-system-python-314) — Python 3.12 over system Python 3.14
+- [D-002](#d-002-provider-data-source-cms-nppes--census-acs-not-hrsa-ahrf) — Provider source: CMS NPPES + Census ACS (not HRSA AHRF)
+- [D-003](#d-003-data-vintages-locked) — Data vintages locked
+- [D-004](#d-004-sqlite-over-postgres--duckdb) — SQLite over Postgres/DuckDB
+
+### Phase 1 — Data Acquisition
+- [D-005](#d-005-raw-data-lifecycle-gitignored-pipeline-downloaded-ms-filtered-subset-bundled-in-zip) — Raw data lifecycle
+- [D-006](#d-006-cdc-places--2025-release-long-form-county-dataset) — CDC PLACES 2025 long-form
+- [D-007](#d-007-cdcatsdr-svi--2022-release-mississippi-county-csv-direct) — CDC/ATSDR SVI 2022 MS county direct
+- [D-008](#d-008-cms-nppes--may-2026-monthly-snapshot-ms--primary-care-taxonomies) — CMS NPPES + 6 primary-care taxonomies
+- [D-009](#d-009-census-acs-2022-5-year--api-key-via-env-b01003_001e) — Census ACS via API key in .env
+- [D-010](#d-010-zip--county-crosswalk-census-2020-zcta-county-relationship-file) — ZIP→county crosswalk (amended Phase 3 to largest-AREALAND_PART)
+
+### Phase 2 — Schema Design & Ingestion
+- [D-011](#d-011-places-burden-composite-scope-10-of-40-measures) — PLACES burden composite scope (10 of 40)
+- [D-012](#d-012-phase-2-scope-schema--ingestion--quality-checks--cleaning-report) — Phase 2 scope
+- [D-013](#d-013-region-partition-4-regions-with-cited-source-authorities) — 4-region partition with citations
+- [D-014](#d-014-svi--999-missing-value-sentinel-coerced-to-null-at-load) — SVI -999 → NULL coercion + tripwire
+- [D-015](#d-015-no-regions-lookup-table-region-citations-live-in-docs) — No `regions` lookup table
+
+### Phase 3 — Analytical SQL
+- [D-016](#d-016-egi-weighting-equal-thirds-for-the-three-components) — EGI equal-thirds weighting
+- [D-017](#d-017-egi-implementation-as-a-sql-view-not-a-persisted-table) — EGI as a VIEW, not a table
+- [D-018](#d-018-v_equity_gap_index-exposes-all-3-component-scores) — View exposes all 3 component scores
+- [D-019](#d-019-egi-applies-no-population-floor) — No population floor (Issaquena = federal-HPSA validation)
 
 ---
 

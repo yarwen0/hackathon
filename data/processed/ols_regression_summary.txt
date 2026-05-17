@@ -4,7 +4,7 @@ Dep. Variable:              egi_score   R-squared:                       0.978
 Model:                            OLS   Adj. R-squared:                  0.977
 Method:                 Least Squares   F-statistic:                     859.9
 Date:                Sun, 17 May 2026   Prob (F-statistic):           4.91e-63
-Time:                        00:21:45   Log-Likelihood:                -183.94
+Time:                        00:56:29   Log-Likelihood:                -183.94
 No. Observations:                  82   AIC:                             377.9
 Df Residuals:                      77   BIC:                             389.9
 Df Model:                           4                                         

@@ -205,6 +205,53 @@ county; a future Phase-3.5 query can surface large divergences if any.
 | 6 | Multi-county ZCTAs (54 % of MS) assigned to a single county by largest-population rule; some providers will be counted in a "wrong" county whose ZIP they share | D-010; data dictionary `zcta_county_crosswalk` |
 | 7 | PLACES suppresses some county-measure cells; loaded as NULL, naturally excluded from per-county averages but reduces sample sizes for those measures | Loader `num_or_none` |
 
+## 3. Analytical decisions that emerged after data load (Phase 3)
+
+Cleaning and ingestion (sections 2.1–2.5) finished cleanly with 27/27 quality
+checks passing. The Phase 3 analytical SQL work then surfaced four further
+judgment calls that required choice and documentation, all in `DECISIONS.md`:
+
+- **D-016 — equal-thirds EGI weights.** Considered four weighting schemes
+  (equal, outcome-favored, empirical PCA, HRSA HPSA-style); chose equal
+  weights with County Health Rankings precedent + transparency rationale.
+- **D-017 — VIEW vs persisted table.** Chose `CREATE VIEW v_equity_gap_index`
+  over a loader-persisted table. At 82 rows view recomputation is
+  sub-millisecond; keeps the EGI math auditable in `sql/q05`.
+- **D-018 — component exposure.** The view exposes all 3 component scores
+  alongside the EGI so downstream queries (q06/q07/q08), statistics, and
+  visualizations can drill into "what drives this county's EGI" without
+  re-implementing the math.
+- **D-019 — no population floor.** Smallest counties remain in the ranking.
+  Issaquena (pop 1,206) ranking #1 turned out to coincide with its
+  federally-designated HPSA status — methodology validation against an
+  independent benchmark.
+
+Beyond those four design decisions, Phase 3 surfaced one additional
+data-quality issue that required a Phase 1 amendment — see §2.6 above
+(D-010 area-weighted attribution).
+
+## 4. Statistical-validation findings worth folding back into the cleaning story (Phase 3.5)
+
+Four statistical analyses were run against the loaded database
+(`python/03_statistical_analysis.py`). Two of the four findings have
+direct implications for how the cleaning workflow should be described to
+downstream readers:
+
+- **Burden ↔ vulnerability correlation r = 0.734.** Above the 0.7
+  partial-double-counting threshold. The cleaning workflow correctly
+  retains both as independent components; the correlation is documented
+  in the README's Limitations section. Capacity ↔ vulnerability r = 0.064
+  confirms capacity is genuinely independent — a methodology strength.
+- **Top-10 EGI counties cluster statistically.** Bootstrap CIs show all 9
+  adjacent top-10 county-pairs have overlapping 95% CIs. Issaquena's #1
+  ranking is the best-supported point estimate, but the top 5 are
+  materially indistinguishable. The cleaning report's framing of "the
+  top-10" should be read as "a tight cluster of 5–10 underserved Delta and
+  rural Other counties" rather than a precisely ordered ranking.
+
+These findings are surfaced in `docs/presentation_talking_points.md` and
+the README, and don't require any cleaning-step changes.
+
 ## 5. Validation results
 
 The companion script `python/01b_data_quality_checks.py` runs a

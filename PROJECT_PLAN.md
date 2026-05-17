@@ -72,14 +72,14 @@
 - [x] Commit to git
 
 ## Phase 5: Automation, Notebook, Docs (~2.5 hrs)
-- [ ] Write `run_pipeline.py` — single command runs Phases 1b → 4
-- [ ] Test `run_pipeline.py` end-to-end on clean state
-- [ ] Build Jupyter notebook `notebooks/analysis_walkthrough.ipynb`
-- [ ] Write `docs/context_and_background.md` — MS health context, 3-5 cited sources
-- [ ] Write final README.md (punchline opener → setup → datasets → methodology → findings → limitations → future work)
-- [ ] Finalize DECISIONS.md
-- [ ] Update RUBRIC_CHECKLIST.md — verify every item ticked
-- [ ] Commit to git
+- [x] Write `run_pipeline.py` — single command runs Phases 1b → 4 (7.9s end-to-end)
+- [x] Test `run_pipeline.py` end-to-end on clean state (exit 0, all 12 steps OK, all 9 row counts match)
+- [ ] Build Jupyter notebook `notebooks/analysis_walkthrough.ipynb` (Phase 5 Part 2)
+- [x] Write `docs/context_and_background.md` — MS health context, 9 cited sources (CDC PLACES, SVI, BRFSS, HRSA, CMS NPPES, County Health Rankings, America's Health Rankings, MS DRA, MSDH)
+- [x] Write final README.md — punchline opener (Issaquena fact table) → datasets → methodology → schema → key findings → statistical validation → setup → limitations → future work → file structure
+- [x] Finalize DECISIONS.md — TOC + "How to read this document" header + all 19 entries
+- [x] Finalize docs/data_cleaning_report.md — added §3 (Phase 3 analytical decisions) and §4 (statistical validation findings)
+- [x] Commit to git ("Phase 5 part 1")
 
 ## Phase 6: Presentation Deck (~2 hrs)
 - [ ] Slide 1: Title

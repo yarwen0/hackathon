@@ -89,9 +89,9 @@ Boxes below are ticked only when the actual deliverable file exists.
 - [x] **Advanced SQL techniques** → CTEs throughout (10 chained in q05, 6 in q08), DENSE_RANK + NTILE(5) in q02/q03/q04/q05, MIN/MAX OVER PARTITION BY in q02/q05, MIN/MAX OVER () in q03/q05, CASE chains in q04/q08, UNPIVOT via UNION ALL in q06, ROW_NUMBER() OVER PARTITION BY in q06/q07/q08, conditional MAX aggregation for pivots in q06/q08, CREATE VIEW + DROP VIEW IF EXISTS in q05, scalar max() in q04, CROSS JOIN constants in q05.
 - [x] **Data cleaning workflows** → `python/01b_data_quality_checks.py` (27 checks all PASS) + `docs/data_cleaning_report.md`
 - [x] **Statistical analysis** → `python/03_statistical_analysis.py` ran clean: Pearson (burden↔vulnerability r=0.734 — flagged double-counting limitation); OLS (R²=0.978, 3 of 4 predictors significant, is_delta fully mediated); Bootstrap CI (1,000 iterations, top-5 statistically clustered); z-score outliers (4 low-side hubs only)
-- [ ] **Automation** → `run_pipeline.py` regenerates entire project in one command
+- [x] **Automation** → `run_pipeline.py` regenerates entire project in one command (verified 7.91s end-to-end: loader 0.6s + DQ 0.02s + 8 SQL files 0.11s + stats 1.77s + 5 viz 5.39s; all row counts match)
 - [x] **Interactive visualizations** → Plotly choropleth `mississippi_egi_map.html` (10.8 MB standalone, hover tooltips per county with rank/EGI/3 components); PNG screenshot also saved for slides
-- [ ] **Additional research / contextual analysis** → `docs/context_and_background.md` with 3-5 cited sources
+- [x] **Additional research / contextual analysis** → `docs/context_and_background.md` with 9 cited public-landing-page sources (CDC PLACES, BRFSS, SVI; HRSA HPSA; CMS NPPES; RWJF County Health Rankings; America's Health Rankings; MS Delta Regional Authority; MSDH) — every URL verifiable, no fabricated journal citations
 
 ## Submission Requirements
 
@@ -105,10 +105,10 @@ Boxes below are ticked only when the actual deliverable file exists.
 - [ ] Contains: SQL scripts (sql/)
 - [ ] Contains: Visualizations (visualizations/)
 - [ ] Contains: GitHub link in README (optional but included for credibility)
-- [ ] README has: project overview
-- [ ] README has: datasets used
-- [ ] README has: key findings/insights
-- [ ] README has: setup instructions
+- [x] README has: project overview
+- [x] README has: datasets used (table with 5 sources + provenance)
+- [x] README has: key findings/insights (6 bullets including Issaquena #1 HPSA validation + Delta/Non-Delta + Rural/Urban gaps)
+- [x] README has: setup instructions (4-step bash block: venv → pip install → .env Census key → `python run_pipeline.py`)
 - [ ] Presentation communicates: project focus
 - [ ] Presentation communicates: datasets used
 - [ ] Presentation communicates: schema/organizational approach
