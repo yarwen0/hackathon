@@ -62,18 +62,14 @@
 - [x] Commit to git
 
 ## Phase 4: Visualizations (~3 hrs)
-- [ ] `python/02_visualize.py` — produces all charts from SQLite views
-- [ ] Plotly choropleth → `visualizations/mississippi_equity_gap_map.html` + `.png`
-   - Hover tooltips with county name, EGI rank, components
-   - Green-to-red color scale
-- [ ] Top 10 horizontal bar chart → `visualizations/top10_underserved.png`
-   - Stacked segments showing burden/capacity/vulnerability contribution
-- [ ] Driver grid (small multiples) → `visualizations/drivers_grid.png`
-- [ ] Burden vs capacity scatter → `visualizations/burden_vs_capacity_scatter.png`
-   - Colored by SVI, top-10 labeled, "danger zone" highlighted
-- [ ] Full ranking CSV → `visualizations/full_ranking.csv`
-- [ ] All charts consistent in style, color palette, fonts
-- [ ] Commit to git
+- [x] `python/02_visualize.py` — produces all 5 visualizations from `v_equity_gap_index` (5.0s wall time)
+- [x] Plotly choropleth → `visualizations/mississippi_egi_map.html` + `.png` — hover tooltips, Issaquena callout, top-10 black borders, MS-zoomed
+- [x] Top 10 horizontal bar chart → `visualizations/top10_bar.png` — weighted-contribution stacked segments sum to EGI
+- [x] Drivers grid (2x5 small multiples) → `visualizations/drivers_grid.png` — driver_profile annotated per subplot
+- [x] Burden vs capacity scatter → `visualizations/burden_capacity_scatter.png` — viridis vulnerability color, danger zone, Issaquena gold star
+- [x] Full ranking CSV → `visualizations/full_ranking.csv` (copy of q05 full ranking)
+- [x] All charts consistent: rcParams set once; same component palette (red/blue/purple) across V2/V3; DejaVu Sans, dpi=150, white facecolor
+- [x] Commit to git
 
 ## Phase 5: Automation, Notebook, Docs (~2.5 hrs)
 - [ ] Write `run_pipeline.py` — single command runs Phases 1b → 4

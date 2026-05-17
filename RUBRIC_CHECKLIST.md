@@ -58,12 +58,12 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Challenge Requirement 4: Visualization
 
-- [ ] Visualizations clearly communicate findings → 6 charts in `/visualizations/`
-- [ ] Geographic / map-based viz → `mississippi_equity_gap_map.html` + `.png`
-- [ ] Charts → `top10_underserved.png`, `drivers_grid.png`, `correlation_heatmap.png`
-- [ ] Graphs → `burden_vs_capacity_scatter.png`
-- [ ] Tables → `full_ranking.csv`
-- [ ] Summary visuals → `drivers_grid.png` shows summary per top-10 county
+- [x] Visualizations clearly communicate findings → 5 viz files in `/visualizations/` (+ `correlation_heatmap.png` from Phase 3.5 = 6 total)
+- [x] Geographic / map-based viz → `mississippi_egi_map.html` (interactive) + `mississippi_egi_map.png` (static, slide-ready); Delta cluster visible, Issaquena callout, top-10 black borders
+- [x] Charts → `top10_bar.png` (stacked horizontal), `drivers_grid.png` (2x5 small multiples), `correlation_heatmap.png`
+- [x] Graphs → `burden_capacity_scatter.png` (82 counties, viridis vulnerability color, Issaquena gold-star highlight, danger-zone shading)
+- [x] Tables → `full_ranking.csv` (82 rows, all 10 EGI columns)
+- [x] Summary visuals → `drivers_grid.png` shows component profile + driver_profile annotation per top-10 county
 
 ## Challenge Requirement 5: Presentation
 
@@ -90,7 +90,7 @@ Boxes below are ticked only when the actual deliverable file exists.
 - [x] **Data cleaning workflows** → `python/01b_data_quality_checks.py` (27 checks all PASS) + `docs/data_cleaning_report.md`
 - [x] **Statistical analysis** → `python/03_statistical_analysis.py` ran clean: Pearson (burden↔vulnerability r=0.734 — flagged double-counting limitation); OLS (R²=0.978, 3 of 4 predictors significant, is_delta fully mediated); Bootstrap CI (1,000 iterations, top-5 statistically clustered); z-score outliers (4 low-side hubs only)
 - [ ] **Automation** → `run_pipeline.py` regenerates entire project in one command
-- [ ] **Interactive visualizations** → Plotly choropleth saved as standalone HTML
+- [x] **Interactive visualizations** → Plotly choropleth `mississippi_egi_map.html` (10.8 MB standalone, hover tooltips per county with rank/EGI/3 components); PNG screenshot also saved for slides
 - [ ] **Additional research / contextual analysis** → `docs/context_and_background.md` with 3-5 cited sources
 
 ## Submission Requirements
