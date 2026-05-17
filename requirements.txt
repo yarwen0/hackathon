@@ -26,3 +26,6 @@ ipykernel>=6.29,<7.0
 # I/O
 openpyxl>=3.1,<4.0
 requests>=2.31,<3.0
+
+# Config / secrets
+python-dotenv>=1.0,<2.0

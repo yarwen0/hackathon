@@ -15,6 +15,11 @@ __pycache__/
 .vscode/
 .idea/
 
+# Secrets / local config
+.env
+.env.*
+!.env.example
+
 # Raw data (kept out of version control; may be large)
 data/raw/*.csv
 data/raw/*.zip

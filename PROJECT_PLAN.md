@@ -13,15 +13,15 @@
 - [x] CLAUDE.md, PROJECT_PLAN.md, RUBRIC_CHECKLIST.md, QUESTIONS.md, .gitignore in place
 
 ## Phase 1: Data Acquisition (~2 hrs)
-- [ ] Download CDC PLACES county data → `data/raw/places_county.csv`
-- [ ] Download CDC SVI county data → `data/raw/svi_county.csv`
-- [ ] Download HRSA AHRF or CMS provider data → `data/raw/providers.csv`
-- [ ] Download Census ACS county population → `data/raw/census_population.csv`
-- [ ] Inspect each file: row counts, columns, FIPS format (5-digit string, leading zeros preserved)
-- [ ] Confirm Mississippi rows present (state FIPS = 28, ~82 counties)
-- [ ] Confirm FIPS join keys align across all datasets
-- [ ] Document any data oddities found in QUESTIONS.md
-- [ ] Commit to git
+- [x] Download CDC PLACES county data → `data/raw/places_county_ms_2025.csv`
+- [x] Download CDC SVI county data → `data/raw/svi_county_ms_2022.csv`
+- [x] Download HRSA AHRF or CMS provider data → `data/raw/cms_nppes_ms_primary_care_2026-05.csv`
+- [ ] Download Census ACS county population → `data/raw/census_acs_county_population_ms_2022.csv` (BLOCKED on API key)
+- [x] Inspect each file: row counts, columns, FIPS format (5-digit string, leading zeros preserved) — done for PLACES/SVI/NPPES; Census pending
+- [x] Confirm Mississippi rows present (state FIPS = 28, ~82 counties) — PLACES 82, SVI 82, NPPES 6,404 providers in MS
+- [ ] Confirm FIPS join keys align across all datasets — PLACES↔SVI verified (82↔82, zero deltas); Census pending; NPPES needs ZIP→FIPS crosswalk in Phase 2
+- [x] Document any data oddities found in QUESTIONS.md
+- [x] Commit to git (interim commit; final Phase 1 commit awaits Census)
 
 ## Phase 2: Schema Design & Ingestion (~3 hrs)
 - [ ] Draft ER diagram (paper sketch first, then dbdiagram.io)
