@@ -176,6 +176,10 @@ hackathon-2026/
 
 Every analytical and methodological decision is logged with rationale in [`DECISIONS.md`](DECISIONS.md) (D-001 through D-019). Cleaning workflow narrative including the D-010 amendment is in [`docs/data_cleaning_report.md`](docs/data_cleaning_report.md). Background research with citations is in [`docs/context_and_background.md`](docs/context_and_background.md).
 
+## Repository
+
+**Repository:** https://github.com/[username]/hackathon-2026 (public)
+
 ---
 
 Built for the Gulf South Center for Community-Engaged Health Research and Innovation, May 2026.

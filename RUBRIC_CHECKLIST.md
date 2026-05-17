@@ -47,14 +47,14 @@ Boxes below are ticked only when the actual deliverable file exists.
 - [x] Population group analysis → q04 (vulnerability quintiles + dominant SVI theme per county), q07 Section B (Rural vs Urban)
 - [x] Public health indicators analyzed → all 8 queries
 - [x] Meaningful SQL queries included → 8 commented `.sql` files in `/sql/` + 1 SQL VIEW (`v_equity_gap_index`)
-- [ ] Python/Pandas supporting analysis → `python/03_statistical_analysis.py` PENDING Phase 3.5; `python/02_visualize.py` PENDING Phase 4
+- [x] Python/Pandas supporting analysis → `python/03_statistical_analysis.py` (4 analyses + 4 artifacts) + `python/02_visualize.py` (5 visualizations)
 
 ## Challenge Requirement 3: Analysis & Insights
 
 - [x] Insights valuable to healthcare professionals → top-10 underserved counties (q06) with driver_profile (8 multi-component, 2 one-leading)
 - [x] Insights for researchers → statistical validation done: r=0.734 component correlation limitation flagged; OLS shows Delta effect fully mediated by underlying components; bootstrap reveals top-5 statistical cluster
 - [x] Insights for hospital leadership → capacity gap analysis (q03) + per-county drivers (q08) showing Obesity+BP dominate, Issaquena uniquely zero providers
-- [ ] Insights for public health organizations → "tool for the Gulf South Center" framing in README + presentation — PENDING (Phase 5/6)
+- [x] Insights for public health organizations → "decision-support tool for the Gulf South Center" framing in README project-overview paragraph + presentation slide 8 (4 concrete use cases)
 
 ## Challenge Requirement 4: Visualization
 
@@ -78,11 +78,11 @@ Boxes below are ticked only when the actual deliverable file exists.
 ## Evaluation Criteria Coverage
 
 - [x] Data Understanding & Schema Design → 9-table normalized schema + ER diagram + data dictionary (DECISIONS.md D-011..D-015)
-- [ ] Querying & Analysis → 8 SQL files with CTEs, window functions, joins
-- [ ] Insight Generation → composite EGI, top-10 ranking, driver breakdown, regional comparison
-- [ ] Visualization → 6 charts including interactive choropleth
-- [ ] Communication → README punchline opener + 9-slide deck + dual-audience design
-- [ ] Creativity & Initiative → original composite index, "decision tool" framing
+- [x] Querying & Analysis → 8 SQL files with CTEs, DENSE_RANK/NTILE window functions, multi-table joins, CASE chains, UNPIVOT, CREATE VIEW
+- [x] Insight Generation → composite EGI (Issaquena #1 HPSA-validated), top-10 ranking, q08 driver breakdown, q07 Delta/Non-Delta + Rural/Urban regional comparison
+- [x] Visualization → 6 charts including interactive Plotly choropleth (mississippi_egi_map.html)
+- [x] Communication → README punchline opener (Issaquena fact table) + 9-slide deck (presentation_script.md, 5:36) + dual-audience design (technical SQL refs + plain-English hook)
+- [x] Creativity & Initiative → original composite EGI methodology + "decision-support tool for the Gulf South Center" framing + D-010 iterative-validation discovery
 
 ## BONUS CONSIDERATIONS (ALL SIX MUST BE TICKED)
 
@@ -109,12 +109,12 @@ Boxes below are ticked only when the actual deliverable file exists.
 - [x] README has: datasets used (table with 5 sources + provenance)
 - [x] README has: key findings/insights (6 bullets including Issaquena #1 HPSA validation + Delta/Non-Delta + Rural/Urban gaps)
 - [x] README has: setup instructions (4-step bash block: venv → pip install → .env Census key → `python run_pipeline.py`)
-- [ ] Presentation communicates: project focus
-- [ ] Presentation communicates: datasets used
-- [ ] Presentation communicates: schema/organizational approach
-- [ ] Presentation communicates: analysis methods
-- [ ] Presentation communicates: visualizations
-- [ ] Presentation communicates: findings and conclusions
+- [x] Presentation communicates: project focus → slide 1 (title) + slide 2 (Issaquena hook)
+- [x] Presentation communicates: datasets used → slide 4 (5 federal sources + ER diagram)
+- [x] Presentation communicates: schema/organizational approach → slide 4 (er_diagram.png embed)
+- [x] Presentation communicates: analysis methods → slide 5 (EGI formula + equal-thirds defense)
+- [x] Presentation communicates: visualizations → slides 6 (choropleth) + 7 (top-10 bar)
+- [x] Presentation communicates: findings and conclusions → slides 2 + 7 + 8 (headline + drivers + use cases)
 - [ ] NO `node_modules/` in ZIP
 - [ ] NO `venv/` in ZIP
 - [ ] NO `dist/` in ZIP
@@ -124,8 +124,8 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Final pre-submission audit
 - [ ] Every checkbox above is ticked
-- [ ] `run_pipeline.py` tested from clean state — works end-to-end
-- [ ] README opens with the punchline finding (not "Hello, this is my project")
+- [x] `run_pipeline.py` tested from clean state — works end-to-end (verified 7.80s, exit 0, all 9 row counts match)
+- [x] README opens with the punchline finding (not "Hello, this is my project") — opens with bold Issaquena sentence + 10-row fact table + HPSA-validation paragraph
 - [ ] Presentation rehearsed 3+ times, lands at 5:45–5:55
 - [ ] Email drafted, ZIP attached, link tested
 - [ ] Submit
