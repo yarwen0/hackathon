@@ -67,13 +67,13 @@ Boxes below are ticked only when the actual deliverable file exists.
 
 ## Challenge Requirement 5: Presentation
 
-- [ ] 6-minute virtual presentation prepared → `presentation.pdf` (9 slides)
-- [ ] Explains approach → slides 4–5
-- [ ] Explains datasets used → slide 4
-- [ ] Explains findings → slides 6–7
-- [ ] Explains conclusions → slide 8
-- [ ] Understandable to technical audience → schema diagram, SQL terminology
-- [ ] Understandable to non-technical audience → hook is plain English, "so what" frames real-world use
+- [~] 6-minute virtual presentation prepared — `docs/presentation_script.md` with 9 slides + verbatim speaker notes totaling 5:36 (`presentation.pdf` to be generated manually from the .md by the user before submission)
+- [x] Explains approach → slides 4–5 (datasets + EGI formula with equal-thirds defense)
+- [x] Explains datasets used → slide 4 (5 federal sources + ER diagram)
+- [x] Explains findings → slides 6–7 (choropleth + top-10 component breakdown)
+- [x] Explains conclusions → slide 8 (4 Gulf South Center use cases)
+- [x] Understandable to technical audience → schema diagram, SQL references, statistical validation in slide 9
+- [x] Understandable to non-technical audience → slide 2 hook is plain English (1,206 people, zero providers, federal HPSA convergence)
 
 ## Evaluation Criteria Coverage
 

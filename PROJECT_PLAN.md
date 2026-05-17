@@ -74,7 +74,7 @@
 ## Phase 5: Automation, Notebook, Docs (~2.5 hrs)
 - [x] Write `run_pipeline.py` — single command runs Phases 1b → 4 (7.9s end-to-end)
 - [x] Test `run_pipeline.py` end-to-end on clean state (exit 0, all 12 steps OK, all 9 row counts match)
-- [ ] Build Jupyter notebook `notebooks/analysis_walkthrough.ipynb` (Phase 5 Part 2)
+- [x] Build Jupyter notebook `notebooks/analysis_walkthrough.ipynb` — 15 cells, executes end-to-end via `jupyter nbconvert --execute`, 10.6 MB with embedded plotly map
 - [x] Write `docs/context_and_background.md` — MS health context, 9 cited sources (CDC PLACES, SVI, BRFSS, HRSA, CMS NPPES, County Health Rankings, America's Health Rankings, MS DRA, MSDH)
 - [x] Write final README.md — punchline opener (Issaquena fact table) → datasets → methodology → schema → key findings → statistical validation → setup → limitations → future work → file structure
 - [x] Finalize DECISIONS.md — TOC + "How to read this document" header + all 19 entries
@@ -82,16 +82,16 @@
 - [x] Commit to git ("Phase 5 part 1")
 
 ## Phase 6: Presentation Deck (~2 hrs)
-- [ ] Slide 1: Title
-- [ ] Slide 2: Hook (specific finding, specific county)
-- [ ] Slide 3: Problem framing
-- [ ] Slide 4: Datasets & schema (with ER diagram)
-- [ ] Slide 5: Methodology (the index formula)
-- [ ] Slide 6: Headline visual (choropleth screenshot)
-- [ ] Slide 7: Top 10 + driver breakdown
-- [ ] Slide 8: "So what" — Gulf South Center use case
-- [ ] Slide 9: Limitations + Q&A
-- [ ] Export to `presentation.pdf`
+- [x] Slide 1: Title — `docs/presentation_script.md` ready for Keynote
+- [x] Slide 2: Hook (verified Issaquena narrative with [beat] markers; ultrathink build-and-reveal)
+- [x] Slide 3: Problem framing (MS national rank + Delta region history)
+- [x] Slide 4: Datasets & schema (with ER diagram embed)
+- [x] Slide 5: Methodology (EGI formula + equal-thirds defense)
+- [x] Slide 6: Headline visual (choropleth embed)
+- [x] Slide 7: Top 10 + driver breakdown (with "multi-component dominant" explainer)
+- [x] Slide 8: "So what" — Gulf South Center use case (ultrathink closer w/ "no prior MS health background" credibility move)
+- [x] Slide 9: Limitations + Q&A (4 limitations including D-010 iterative-validation story)
+- [ ] Export to `presentation.pdf` — user-generated manually from `docs/presentation_script.md` before final submission
 
 ## Phase 7: Package & Submit (~1 hr) — Sunday before 6 PM
 - [ ] Final RUBRIC_CHECKLIST.md audit — all items ticked
