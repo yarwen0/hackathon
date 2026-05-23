@@ -5,7 +5,6 @@ import type { AuthUser } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
-  { href: '/', label: 'Landing' },
   { href: '/compare', label: 'Compare' },
   { href: '/cohort', label: 'Cohort Builder' },
   { href: '/quadrant', label: 'Quadrant' },
