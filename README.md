@@ -1,3 +1,9 @@
+> **Round 2 submission:** See [ROUND2_README.md](./ROUND2_README.md) for the 
+> EGI Workbench web application, deployed app URL, demo accounts, and 
+> architecture documentation.
+
+---
+
 # Mississippi Health Equity Gap Index
 
 **Of Mississippi's 82 counties, Issaquena County has the largest health equity gap in the state.**
