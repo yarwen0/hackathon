@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+.pnp.*
+.yarn/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+
+# Build artifacts
+public/ms-counties.geojson
+public/ms-counties-static.svg
+
+# Env
+.env*.local
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

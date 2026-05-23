@@ -12,8 +12,10 @@ __pycache__/
 
 # OS / editor
 .DS_Store
+Thumbs.db
 .vscode/
 .idea/
+*.swp
 
 # Secrets / local config
 .env
@@ -40,3 +42,26 @@ data/raw/*.geojson
 
 # Hackathon reference materials (not part of the project)
 Round_1_Hackathon_Instructions.docx
+Round_2_Hackathon_Instructions.docx
+
+# Round 2 internal planning docs (not submission deliverables)
+CLAUDE.md
+ROUND2_CONTEXT.md
+ROUND2_DESIGN.md
+ROUND2_BUILD_PROMPT.md
+PROJECT_PLAN.md
+RUBRIC_CHECKLIST.md
+DESIGN_SHARPNESS_PASS.md
+POLISH_PASS.md
+QUADRANT_REFINE.md
+QUADRANT_SIZING.md
+
+# Claude Code internals
+.claude/
+
+# Next.js / Node
+app/node_modules/
+app/.next/
+app/.vercel/
+app/.env.local
+app/.env.*.local

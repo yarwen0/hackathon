@@ -1,0 +1,192 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Editorial off-white & warm-black foundation. */
+  --background: #fbf9f4;
+  --foreground: #1a1612;
+  --card: #ffffff;
+  --card-foreground: #1a1612;
+  --muted: #efeae0;
+  --muted-foreground: #6b6258;
+
+  /* Single accent — used sparingly. Deep red, recalls MS state flag. */
+  --accent: #8b1e1e;
+  --accent-soft: #d4a8a8;
+  --accent-foreground: #fbf9f4;
+
+  /* Rules instead of cards. */
+  --rule: rgba(26, 22, 18, 0.14);
+  --rule-strong: rgba(26, 22, 18, 0.32);
+
+  /* Status colors — used only for rank-change badges + map. */
+  --success: #1d6e3a;
+  --warn: #b8821a;
+
+  /* Map gradient. */
+  --map-low: #1d6e3a;
+  --map-mid: #e6c84d;
+  --map-high: #8b1e1e;
+}
+
+* {
+  border-color: var(--rule);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-feature-settings: 'kern', 'liga', 'calt';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Display headers use Fraunces with optical-size + softness for character. */
+.font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-feature-settings: 'kern', 'liga';
+  font-variation-settings: 'opsz' 144, 'SOFT' 50, 'WONK' 0;
+  letter-spacing: -0.015em;
+}
+
+h1.font-display,
+.headline {
+  font-variation-settings: 'opsz' 144, 'SOFT' 60, 'WONK' 1;
+  letter-spacing: -0.025em;
+}
+
+/* Tabular numerals everywhere numbers appear column-wise. */
+.tabular,
+table td.tabular,
+table th.tabular,
+.font-mono {
+  font-family: var(--font-plex-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+
+table {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle horizontal rules between sections. */
+.section-rule {
+  border-top: 1px solid var(--rule);
+}
+
+/* Focus ring — visible, accent-colored. */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Smooth selection. */
+::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+/* Print: render PDF-ready, hide nav + controls. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: #000;
+  }
+}
+
+/* Leaflet overrides to match editorial palette. */
+.leaflet-container {
+  background: var(--background) !important;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+}
+.leaflet-tooltip,
+.leaflet-popup-content-wrapper {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--rule-strong) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 6px 24px rgba(26, 22, 18, 0.12) !important;
+  font-family: var(--font-plex-sans), system-ui, sans-serif;
+  font-size: 0.8125rem;
+}
+.leaflet-tooltip {
+  padding: 8px 10px !important;
+}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+  border-color: var(--rule-strong) !important;
+}
+.leaflet-control-attribution {
+  background: rgba(251, 249, 244, 0.85) !important;
+  color: var(--muted-foreground) !important;
+  font-size: 0.6875rem !important;
+}
+
+/* Recharts text inherits page font. */
+.recharts-text {
+  font-family: var(--font-plex-sans), system-ui, sans-serif !important;
+  fill: var(--muted-foreground);
+}
+.recharts-cartesian-axis-tick-value {
+  font-family: var(--font-plex-mono), ui-monospace, monospace !important;
+  font-variant-numeric: tabular-nums;
+  fill: var(--muted-foreground);
+}
+.recharts-legend-item-text {
+  color: var(--foreground) !important;
+  font-size: 0.8125rem;
+}
+
+/* Reusable inline component bar. */
+.bar-track {
+  position: relative;
+  height: 6px;
+  background: var(--muted);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--foreground);
+  border-radius: 2px;
+}
+.bar-state-line {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 1px;
+  background: var(--rule-strong);
+}
+
+/* Skeleton shimmer (used in EmptyState/Skeleton). */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.skeleton {
+  background: var(--muted);
+  border-radius: 2px;
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+/* Sliders */
+[role='slider'] {
+  cursor: grab;
+}
+[role='slider']:active {
+  cursor: grabbing;
+}
