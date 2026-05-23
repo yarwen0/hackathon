@@ -65,3 +65,4 @@ app/.next/
 app/.vercel/
 app/.env.local
 app/.env.*.local
+app/tsconfig.tsbuildinfo
