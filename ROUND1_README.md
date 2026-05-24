@@ -1,6 +1,7 @@
-> **Round 2 submission:** See [ROUND2_README.md](./ROUND2_README.md) for the 
-> EGI Workbench web application, deployed app URL, demo accounts, and 
-> architecture documentation.
+> **Round 2 submission:** See [README.md](./README.md) for the EGI Workbench
+> web application, deployed app URL, demo accounts, and architecture
+> documentation. This file is the Round 1 (data + index) readme, kept for
+> reference.
 
 ---
 

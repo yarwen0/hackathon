@@ -1,339 +1,422 @@
 # EGI Workbench — Round 2 Submission
 
-> Interactive research decision-support tool built on top of the Round 1
-> Mississippi Health Equity Gap Index. For the **Gulf South Center for
-> Community-Engaged Health Research and Innovation**, Hack-a-thon 2026.
+**A research decision-support tool built on the Mississippi Health Equity Gap Index.**
 
-## What this is
+Round 1 produced the index. Round 2 produced the tool — a Next.js application that turns a static ranking of all 82 Mississippi counties into an interactive workbench for the Gulf South Center for Community-Engaged Health Research and Innovation.
 
-**EGI Workbench** is a Next.js 15 web application on top of the existing
-`database.db` SQLite database from Round 1. A program officer logs in,
-filters Mississippi's 82 counties by structural criteria, drills into
-individual county profiles with full audit trails to source data, builds
-custom cohorts, exports them as foundation-ready PDF reports, tests the
-robustness of the methodology with live re-weighting, and queries the
-database conversationally via natural language.
+| | |
+|---|---|
+| **Live app** | https://egi-workbench.vercel.app |
+| **Repository** | https://github.com/yarwen0/hackathon |
+| **Round 1 readme** | [ROUND1_README.md](./ROUND1_README.md) |
+| **Round 1 decisions** | [DECISIONS.md](./DECISIONS.md) (D-001 through D-019) |
+| **Submitted by** | Nhoojah Maharjan · nhoojahm@gmail.com |
+| **Hackathon** | Gulf South Center Hack-a-thon 2026, Round 2 |
+| **Submission date** | May 25, 2026 |
 
-Every number on every page is traceable to the SQL query and federal data
-source that produced it.
+## Contents
 
-## Live and source
+1. [Demo accounts](#demo-accounts)
+2. [The 30-second story](#the-30-second-story)
+3. [Visual tour](#visual-tour)
+4. [Architecture](#architecture)
+5. [The seven surfaces](#the-seven-surfaces)
+6. [Round 2 bonus coverage](#round-2-bonus-coverage)
+7. [Presentation summary](#presentation-summary) — problem, users, technical approach, workflow & data decisions, features, future work
+8. [Methodology & data sources](#methodology--data-sources)
+9. [Running locally](#running-locally)
+10. [Repository layout](#repository-layout)
 
-- **Deployed app:** <https://app-two-pi-29.vercel.app> — log in with any of the three demo accounts below
-- **GitHub:** <https://github.com/yarwen0/hackathon>
-- **Round 1 source:** also at <https://github.com/yarwen0/hackathon>
-
-## Quick start — local
-
-```bash
-cd app
-npm install --legacy-peer-deps
-cp .env.local.example .env.local        # then fill in AUTH_SECRET + (optionally) GROQ_API_KEY
-npm run dev
-# open http://localhost:3000
-```
-
-Node 20+ required. `--legacy-peer-deps` because react-leaflet's peer
-range hasn't caught up to React 19 yet.
-
-The first `npm install` downloads + filters the Mississippi county GeoJSON
-to `app/public/ms-counties.geojson` (via `scripts/build-geojson.mjs`).
+---
 
 ## Demo accounts
 
-Three seeded users on first boot, illustrating the three-role access model:
+The app ships with three seeded users to illustrate role-based access. **Password for all three: `demo`.**
 
-| Email | Password | Role | What they can do |
-|---|---|---|---|
-| `officer@gulfsouth.example` | `demo` | `program_officer` | View everything · build / save / share cohorts · generate PDFs |
-| `steward@gulfsouth.example` | `demo` | `methodology_steward` | Officer permissions plus edit data-source descriptions and methodology metadata |
-| `collaborator@gulfsouth.example` | `demo` | `external_collaborator` | Read-only — sees a persistent banner; cannot save cohorts |
+| Email | Role | Permissions |
+|---|---|---|
+| `officer@gulfsouth.example` | **Program Officer** | Build cohorts, save & share, generate PDF reports, export CSVs |
+| `steward@gulfsouth.example` | **Methodology Steward** | Officer permissions + edit data source descriptions and decision rationales |
+| `collaborator@gulfsouth.example` | **External Collaborator** | View-only — can browse all surfaces but cannot save cohorts or modify methodology |
 
-The login page has one-click sign-in buttons for each role.
+In a production deployment this would integrate with the Center's institutional SSO. The three-role model maps to the people who actually do this work: program officers who build cohorts, methodology stewards who govern the index, and external collaborators (foundation analysts, visiting researchers) who verify findings.
 
-## The seven surfaces (plus the AI page)
+---
 
-| # | Surface | Path | Primary user task |
-|---|---------|------|-------------------|
-| 1 | **Landing — Map + Leaderboard** | `/` | Get the lay of the land; filter Delta + rural; identify candidate counties |
-| 2 | **County Drilldown** | `/county/[fips]` | Understand *why* a county ranks where it does, with full audit tooltips |
-| 3 | **Compare** | `/compare?a=&b=` | Test whether rank ordering matches intuition for adjacent counties |
-| 4 | **Cohort Builder** | `/cohort` | Stack multi-variable filters, save to share link, generate PDF report |
-| 5 | **Quadrant Explorer** | `/quadrant` | Find counties with atypical burden / vulnerability profiles (outliers) |
-| 6 | **Reweight Lab** | `/reweight` | Test whether the headline ranking is robust to weighting choice |
-| 7 | **Methodology** | `/methodology` | Verify data sources, view alternative methodologies (incl. PCA), link to Round 1 |
-| + | **Ask the EGI** | `/ask` | Query the database conversationally — sees SQL + results + plain-English summary |
+## The 30-second story
 
-## Sarah Chen's walkthrough
+Sarah Chen is a program officer at the Gulf South Center with a Tuesday meeting and a foundation considering a $2M rural-health investment. She needs to walk in with defensible county-level evidence.
 
-Sarah is a Program Officer at the Gulf South Center. She has a Tuesday meeting
-with a private foundation considering a $2M rural-health investment. She
-needs to walk in with defensible county-level evidence.
+She opens EGI Workbench. Filters to Delta rural counties with severe provider scarcity. Drills into Issaquena — the #1 county — and sees *why*: zero attributed primary-care providers, 100th-percentile capacity scarcity, independently corroborated by federal HRSA Health Professional Shortage Area designation. She compares it to Holmes (14× the population, more vulnerable). Builds a 6-county Delta cohort. Generates a PDF report with methodology citations and the source SQL in the appendix. Tests whether her recommendation holds under alternative methodologies (it does — Issaquena ranks #1 in two of three weightings, top-5 in all three). Walks into the meeting with a defensible answer.
 
-1. **Logs in** as `officer@gulfsouth.example` → role badge: Officer.
-2. **Landing** — Filters to Delta + rural. The map dims non-matching
-   counties; the leaderboard re-sorts in real time; the URL updates so she
-   can share this exact view.
-3. **Drills into Issaquena** (#1, EGI 87.4) — sees not just the rank, but
-   the audit trail: every metric has an ℹ icon that opens to source,
-   decision rationale, and the SQL snippet that produced the number.
-4. **Compares Issaquena to Holmes** — same Delta region, but Holmes has 14×
-   the population and a higher vulnerability score. She decides a
-   multi-county target is the right move.
-5. **Cohort Builder** — Stacks region=Delta + rural=1 + EGI ≥ 75 + diabetes
-   ≥ 15%. Lands at a 6-county cohort, ~140k people. Hits **Save & share**:
-   share URL copied to clipboard; hits **PDF report**: foundation-ready
-   document downloaded with methodology citations and the source SQL in the
-   appendix.
-6. **Reweight Lab** — Before the meeting, she needs to know whether the
-   recommendation is robust. Drags vulnerability to 100% — Humphreys takes
-   #1 (Issaquena 4th). She can now tell the foundation: "*Issaquena is #1
-   under equal thirds and most weightings; if your priority is specifically
-   vulnerability, Holmes / Humphreys are at the top.*" That nuance wins
-   grants.
-7. **Methodology** — Side-by-side top-10 tables under equal-thirds, PCA
-   (data-driven), and burden-weighted (50/30/20). Six counties appear in
-   all three — the robust core.
+The whole flow takes under 15 minutes.
 
-The "PDF report" + "Reweight Lab" + "audit-tooltip on every number" are the
-three moves that turn a static ranking into a decision-support tool.
+---
+
+## Visual tour
+
+### Login
+
+![EGI Workbench login page with role-based authentication](docs/screenshots/login.png)
+
+Editorial sign-in with three demo roles. The "Index in three numbers" callout surfaces the headline finding — Issaquena #1, corroborated by federal HRSA HPSA designation — before the user even logs in.
+
+### Landing — Where the gap is largest
+
+![Landing page with Mississippi choropleth and ranked leaderboard](docs/screenshots/landing.png)
+
+The choropleth shades all 82 counties on the green-yellow-red equity gradient. The Delta band reads in red immediately. Click any county on the map or row in the table to drill in. Filters across region, rurality, and quintile re-shape both panes in real time. The headline finding callout at the bottom anchors the visit on the strongest data point.
+
+### County Drilldown — Issaquena
+
+![County drilldown showing Issaquena's component breakdown, social vulnerability, and provider mix](docs/screenshots/county-issaquena.png)
+
+Every metric is auditable. The Component Breakdown shows Issaquena worse than the state mean on all three pillars. Social Vulnerability surfaces the dominant theme (Housing & Transport, 100th percentile intra-MS). The Provider Mix callout shows zero attributed primary-care providers — the finding that the federal HPSA designation independently corroborates.
+
+### Compare — Lamar vs. Forrest
+
+![Side-by-side comparison of Lamar and Forrest counties across all metrics](docs/screenshots/compare.png)
+
+Two counties, every metric, aligned with proportion bars. The deltas color-code red (worse) and green (better). Sectioned by summary, components, SVI themes, providers, and burden drivers — the same structure as a research publication's comparison table.
+
+### Cohort Builder — Default state
+
+![Cohort Builder with all 82 counties shown by default](docs/screenshots/cohort.png)
+
+Opens at "82 of 82 counties" — the user narrows from there. The choropleth on the right doubles as a preview of where the cohort sits. The four stat cards (population, median EGI, mean burden, PCP/10k) update live as filters tighten.
+
+### Cohort Builder — Delta rural cohort
+
+![Cohort Builder narrowed to 7 Delta rural counties](docs/screenshots/cohort-delta.png)
+
+Filtered to Delta + Rural. Seven counties matching the criteria. Population 160,123. Median EGI 65.3 — 8.4 points above the state mean. Top burden drivers across the cohort: obesity, high blood pressure, diabetes. One click to PDF or CSV.
+
+### Quadrant Explorer
+
+![Quadrant scatter showing burden vs vulnerability with off-diagonal counties highlighted](docs/screenshots/quadrant.png)
+
+Burden × vulnerability scatter with population sizing and capacity color encoding. Quadrant lines at state means split the chart into four regions. The off-diagonal counties (Smith, Yalobusha, Lauderdale, Harrison, Forrest, Hinds) — those that diverge by 5+ points from the dominant Delta pattern — are outlined and labeled. The Franklin annotation calls out the most atypical case. Below the chart, DeSoto gets its own narrative panel: a Memphis-suburban county pulled into the Delta classification for federal funding purposes, but whose EGI profile (32.9) looks nothing like the Delta hill counties — a finding the scatter makes visible at a glance.
+
+### Reweight Lab
+
+![Reweight Lab showing parameterized EGI re-ranking with live slider updates](docs/screenshots/reweight.png)
+
+Three sliders, sum-constrained to 100. Moving one redistributes proportionally across the other two. The server runs a parameterized re-ranking against the read-only SQLite database in ~200ms. The "Vs Baseline" column on the right shows how each county moves under the new weights. At 61/13/26 (burden-heavy, capacity-light, vulnerability-light), Humphreys overtakes Issaquena. The headline finding callout updates accordingly — judges can see live which weightings preserve the original ranking and which break it.
+
+### Methodology — Three-way comparison
+
+![Methodology page comparing equal-thirds, PCA-derived, and burden-weighted rankings side by side](docs/screenshots/methodology.png)
+
+Three side-by-side leaderboards under different weighting schemes: equal thirds (default), principal-component (data-driven, computed via power iteration on the 3×3 covariance matrix — 74% of variance explained by PC1), and burden-weighted (foundation framing). Six of ten top counties appear in all three top-10 lists. That is the robust core of the ranking. The data sources section below documents all five vintage-locked federal datasets with retrieval dates.
+
+### Ask the EGI — AI-assisted query
+
+![Ask the EGI page showing natural-language SQL generation with safety mechanisms](docs/screenshots/ask.png)
+
+Natural-language questions against the read-only database. The LLM translates to SQL; the SQL is shown to the user before execution. Pre-baked starter chips ensure the page works even if the LLM call fails. The "How this is safe" footer documents the three-layer defense: SELECT-only system prompt, server-side regex validation, and a read-only database connection.
+
+---
 
 ## Architecture
 
 ```mermaid
-flowchart LR
-  Browser["Browser
-  (React 19 + Tailwind)"] -->|HTTP| Next["Next.js 15 App Router
-  Node runtime"]
-  Next -->|read-only| DB[(database.db
-  SQLite · 2.2 MB)]
-  Next -->|sessions, rate-limit, saved cohorts| KV[(Vercel KV
-  Redis-compatible
-  in-memory fallback)]
-  Next -->|natural-language → SQL| Groq[Groq SDK
-  Llama 3.3 70B Versatile]
-  Next -->|@react-pdf/renderer| PDF[/Cohort + County PDFs/]
-  Next -->|streaming| CSV[/CSV exports
-  ranking · cohort · compare · reweight · quadrant · county/]
-  Browser -.client tile.- Leaflet[(MS counties GeoJSON
-  pre-filtered at build time)]
+graph TD
+    Browser([Browser]) -->|HTTPS| Vercel[Vercel · Next.js 15 App Router]
+
+    subgraph "Next.js Server"
+      API[API Routes · Node.js runtime]
+      Pages[Server Components]
+    end
+
+    Vercel --> API
+    Vercel --> Pages
+
+    API -->|SELECT-only<br/>readonly:true| SQLite[(SQLite<br/>9 tables<br/>2.2 MB)]
+    API -->|Sessions + saved cohorts<br/>+ rate limiting| KV[(Vercel KV<br/>Redis-compatible)]
+    API -->|llama-3.3-70b<br/>schema-aware| Groq[Groq API]
+
+    SQLite --> View[v_equity_gap_index<br/>parameterized CTE chain]
+    View --> Reweight[/api/reweight<br/>parameterized weights/]
+    View --> Ranking[/api/ranking<br/>filtered leaderboard/]
 ```
 
-## Bonus considerations — where each lives in the code
+### Tech stack
+
+| Layer | Choice | Rationale |
+|---|---|---|
+| **Framework** | Next.js 15 App Router (Node runtime) | Multi-page routing, server components, API routes, native Vercel deployment |
+| **Language** | TypeScript strict | Type-safe API contracts across 17 endpoints |
+| **Database** | SQLite via `better-sqlite3` (`readonly: true`) | 9 tables, 12,000 rows, static federal data — SQLite is the right tool. Ships with the deploy. Read-only at the connection level as defense-in-depth |
+| **Cache / sessions** | Vercel KV (Redis) | Sessions, saved-cohort storage, AI rate limiting |
+| **Styling** | Tailwind CSS + shadcn/ui | Speed + production polish without rolling a design system |
+| **Charts** | Recharts (interactive) + d3-geo (PDF maps) | Recharts integrates with React; d3-geo renders static SVG for `@react-pdf/renderer` |
+| **Map** | react-leaflet + leaflet | Standard, free, MS-county GeoJSON loads cleanly |
+| **PDF** | `@react-pdf/renderer` | Real PDFs with embedded charts, not browser print-to-PDF |
+| **AI** | Groq SDK + `llama-3.3-70b-versatile` | Free tier, fast, schema-aware SQL generation |
+| **Auth** | Lucia-style sessions + KV | Three seeded users, encrypted HTTP-only cookies, middleware-gated routes |
+| **Fonts** | Fraunces (display) + IBM Plex Sans (body) + IBM Plex Mono (tabular numerals) | Editorial typography, not generic system stack |
+| **Deployment** | Vercel + GitHub | Free for hobby use, deploys from `git push` |
+
+### What we deliberately did NOT use
+
+- **Postgres** — wrong tool for 82 rows of static federal data. Swapping is a `lib/db.ts` change if scale demands it.
+- **Prisma / Drizzle / any ORM** — plain SQL is correct for read-heavy, static data.
+- **GraphQL / tRPC** — REST fits 17 endpoints cleanly.
+- **State management library (Redux / Zustand / Jotai)** — filter state belongs in the URL. It survives reload, back-button, and link-sharing.
+- **Service worker / PWA / i18n / dark mode** — none would have served the research-tool user.
+
+---
+
+## The seven surfaces
+
+| Surface | Path | Primary user task |
+|---|---|---|
+| **Landing** | `/` | See the lay of the land; identify candidate counties via map + filter |
+| **County Drilldown** | `/county/[fips]` | Understand *why* a specific county ranks where it does, with full audit trail |
+| **Compare** | `/compare` | Side-by-side comparison of any two counties across every metric |
+| **Cohort Builder** | `/cohort` | Stack filters to build a multi-county cohort; save, share, export PDF report |
+| **Quadrant Explorer** | `/quadrant` | Find counties with atypical burden/vulnerability profiles (outliers) |
+| **Reweight Lab** | `/reweight` | Test whether the headline ranking is robust to alternative methodologies |
+| **Methodology** | `/methodology` | Verify data sources, view three-way methodology comparison, link to Round 1 docs |
+| **Ask the EGI** | `/ask` | Query the database conversationally; see generated SQL before execution |
+
+---
+
+## Round 2 bonus coverage
+
+Every bonus listed in the Round 2 instructions, with where it's addressed in this submission.
 
 | Bonus | Implementation |
 |---|---|
-| **Authentication** | Custom Lucia-style session module · scrypt password hashes · HMAC-signed HTTP-only cookies · KV-backed sessions with 7-day TTL · `src/lib/auth.ts` |
-| **Role-based access** | Three real roles (officer / steward / collaborator) with middleware + per-route enforcement · `src/middleware.ts` + `requireRole()` |
-| **Backend APIs** | 14 typed REST endpoints under `/api` — ranking, county, compare, cohort (preview/save/list/byToken), quadrant, reweight, methodologies, ask, auth × 3, export/csv, export/pdf · all share `src/lib/types.ts` |
-| **Real-time functionality** | Sub-200ms updates on every filter, slider, and cohort modification via debounce + AbortController + `unstable_cache`. Reweight Lab re-ranks live via parameterized SQL. |
-| **Deployment** | Vercel — `vercel deploy` from this repo. `better-sqlite3` builds against Node 20+ via Vercel's prebuilt binaries. |
-| **Interactive dashboards** | All seven surfaces are interactive dashboards with filtering, drilling, sorting, and live re-computation. |
-| **Accessibility** | Semantic HTML · scope=col on tables · ARIA on filters / sliders / map · skip-to-content link · color never sole signal (rank deltas use ↑/↓ icons + sign + color) · focus-visible rings · contrast ≥ 4.5:1 throughout. |
-| **Scalable architecture** | FIPS-keyed throughout (add a state by changing the loader's state_fips) · view-based SQL (extend the view, every surface picks up the new columns) · cached query results via `unstable_cache` · stateless API routes · plain-SQL data layer ports to Postgres via 2-hour `lib/db.ts` swap. |
-| **Export / report workflows** | CSV export on every panel (ranking, cohort, compare, reweight, quadrant, county) · PDF cohort and county reports with `@react-pdf/renderer`, embedded methodology citations, source SQL in appendix. |
-| **AI-assisted features** | "Ask the EGI" page · natural-language → SQL via Groq Llama 3.3 70B Versatile · schema-aware system prompt + 8 hand-written few-shot examples · server-side SQL validator (SELECT-only, table whitelist, no multi-statement, no comments, LIMIT cap) · read-only DB connection as defense-in-depth · 5 starter chips with hand-written SQL as the demo-day safety net. |
-| **Public-health insights** | Every county page surfaces drivers; the headline finding (Issaquena #1 / HPSA cross-validation) is the framing for the landing copy; the methodology comparison shows the finding is robust across PCA and burden-weighted alternatives. |
-| **Mobile-friendly design** | Tailwind responsive throughout; two-pane layouts stack below `md:`; cohort filter becomes a bottom sheet; map shrinks; tap targets ≥ 44px. |
+| **Authentication systems** | Lucia-style sessions with encrypted HTTP-only cookies, KV-backed storage, scrypt + HMAC. Three seeded users. |
+| **Role-based access** | Three roles enforced at the middleware AND route-handler levels. Officer + Steward can save cohorts; only Steward can edit methodology; Collaborator is view-only. |
+| **Backend APIs** | 17 typed REST endpoints under `/api`. Full request/response types in `lib/types.ts`. |
+| **Real-time functionality** | Sub-200ms updates on every filter, slider, and cohort change. Debounced requests, AbortController-cancelled stale responses, Next.js `unstable_cache` on read-heavy endpoints. |
+| **Deployment to the web** | Vercel — [https://egi-workbench.vercel.app](https://egi-workbench.vercel.app) |
+| **Interactive dashboards** | All 7 surfaces are interactive. Filter, drill, compare, reweight, export. |
+| **Accessibility considerations** | Semantic HTML, full keyboard navigation, ARIA labels on sliders/map/charts, contrast ≥ 4.5:1, color never the sole signal (rank changes use ↑/↓ + color), tables use `<th scope>`. |
+| **Scalable architecture** | FIPS-keyed throughout — every join is on FIPS. Adding another state is `state_fips = '01'` in `01_load_data.py`; the frontend works unchanged. View-based SQL means methodology changes don't ripple through queries. |
+| **Export/report generation** | CSV export on every panel. Multi-page PDF cohort report (cover, methodology, county-by-county, charts, citations, SQL appendix) via `@react-pdf/renderer`. |
+| **AI-assisted features** | "Ask the EGI" — Groq Llama 3.3 70B with schema-aware prompt, SELECT-only enforcement, 3-layer safety. Pre-baked chips ensure functionality even when LLM is unavailable. |
+| **Public health insights** | Issaquena #1 / HRSA HPSA cross-validation. Methodology robustness across 3 weightings. DeSoto's Delta-classification anomaly surfaced visually. |
+| **Scalability considerations** | Documented extension paths: multi-state (FIPS-keyed pipeline, <1 day per state), time series (add `snapshot_year` column, parameterize view), real-time streams (WebSocket subscriptions on the API layer — wrong primitive for annual federal data but supported architecturally). |
+| **Mobile-friendly design** | Tailwind responsive throughout. Two-pane layouts stack vertically below `md:`. Tables become card lists below 768px. Tested at 375px. |
 
-## Architecture decisions & Q&A preparation (verbatim from `ROUND2_DESIGN.md` §9)
+---
 
-Every one of these is a question a sharp judge will ask.
+## Presentation summary
 
-**Q: Why SQLite for a real product?**
-> 82 counties × 9 tables × ~13,000 rows total. SQLite is the right tool for
-> read-heavy, ships-with-the-app, static-dataset workloads. It's used by
-> Bloomberg, Apple, Mozilla, every iPhone. We open it read-only as
-> defense-in-depth: no query — including the AI-generated ones — can mutate
-> the database.
+Mapped to the seven items the Round 2 instructions require the presentation to cover.
 
-**Q: Why not Postgres?**
-> Postgres adds network latency, connection-pool complexity, and a deploy
-> dependency for zero benefit at this scale. If the dataset grew to
-> national scope or required concurrent writes, swapping the connection
-> layer in `lib/db.ts` for `pg` is a 2-hour migration because every query
-> is plain SQL.
+### 1. The problem being solved
 
-**Q: Why client-side filter state in URL params instead of Redux?**
-> Filter state belongs in the URL — it survives reload, back-button, and
-> link-sharing. Sarah can send a teammate a URL like
-> `/cohort?region=Delta&rural=1&egiMin=75` and they see exactly her view. A
-> state library would add a layer without solving a problem.
+Health equity data for Mississippi exists, but it's fragmented across four federal sources — CDC PLACES (disease burden), CDC/ATSDR SVI (social vulnerability), CMS NPPES (provider supply), and US Census ACS (demographics). A program officer at the Gulf South Center who needs to walk into a Tuesday meeting with a foundation considering a $2M rural-health investment cannot, today, answer the question *"which Mississippi counties most need this money, why those specifically, and what's the audit trail?"* without spending a week with four CSVs and a spreadsheet.
 
-**Q: Why three roles and not five, or one?**
-> One role doesn't model the Center's actual structure; five would be
-> invented. Three (officer / steward / collaborator) maps to the people
-> who actually do this work. Adding a fourth role would be straightforward
-> (one constant in `src/lib/demo-users.ts` plus the role union in
-> `src/lib/types.ts`).
+EGI Workbench collapses that week into a session: every Mississippi county scored on a defensible equity-gap index, every number traceable back to its federal source query, every methodological choice testable against alternatives.
 
-**Q: How is your AI page safe from SQL injection or destructive queries?**
-> Three layers. (1) The LLM system prompt restricts it to SELECT-only on a
-> whitelisted set of nine tables plus the EGI view. (2) Server-side regex
-> validation in `validateSql()` rejects any non-SELECT, multi-statement,
-> commented, or forbidden-keyword query before execution — and inspects
-> table references against an allow-list. (3) The database connection
-> itself is opened with `readonly: true` via better-sqlite3. Even a query
-> that somehow bypassed our validators couldn't write.
+### 2. Target users
 
-**Q: How would you scale to other states?**
-> The ingestion pipeline is FIPS-keyed throughout. To add Alabama, run
-> `python/01_load_data.py` with `state_fips = '01'`; the entire frontend
-> works unchanged because every route reads from the view. Adding a state
-> selector to the nav is two hours.
+Three roles modeled on the Center's actual structure (see [Demo accounts](#demo-accounts) for credentials):
 
-**Q: How would you handle trends over time?**
-> The schema extends cleanly with a `snapshot_year` column. View becomes
-> parameterized. UI swaps headline cards for sparklines. About a day of
-> work. We didn't build it because we have one vintage and faking a time
-> series would be dishonest.
+- **Program Officer** (e.g. Sarah Chen) — builds cohorts, exports foundation-ready PDFs, runs comparisons before stakeholder meetings.
+- **Methodology Steward** (e.g. Dr. Marcus Thompson) — verifies the index is robust to alternative weightings, governs data-source attribution, signs off on "official" methodologies.
+- **External Collaborator** — visiting researchers and foundation analysts who review findings in read-only mode.
 
-**Q: How did you balance technical complexity with usability?**
-> The complexity is server-side — nine tables, parameterized re-ranking
-> via inlined CTEs, AI sandboxing. The frontend exposes plain-English
-> interpretations, color-coded risk indicators, sliders. A program officer
-> doesn't need to know what min-max normalization means to use the tool.
+Authentication isn't security theater here — it's the role model.
 
-**Q: Why no real-time data streams?**
-> The underlying datasets are annual federal releases. Real-time data is
-> the wrong primitive. We focused instead on real-time *responsiveness* —
-> every filter, slider, and cohort update is sub-200ms via debounced
-> requests + AbortController. For a live-EHR context, the architecture
-> supports WebSocket subscriptions, but that infrastructure would be
-> unused for federal data.
+### 3. Technical approach
 
-**Q: What's the one thing you'd build next?**
-> A "cohort intervention simulator" — pick a cohort, add hypothetical
-> providers, see how the rankings shift. We scoped it out for Round 2
-> because the underlying math (how much one new NP shifts capacity, what
-> the elasticity is to burden outcomes) requires literature review we
-> couldn't compress into the weekend. We sketched the API contract in
-> `src/lib/types.ts` so the frontend hook would slot in.
+See [Architecture](#architecture) and [Tech stack](#tech-stack) for the full breakdown. Headlines:
 
-## Tech stack
+- **Next.js 15 App Router** on Node runtime, TypeScript strict — server components for fast first paint, typed API contracts across 17 endpoints.
+- **SQLite via `better-sqlite3`, opened `readonly: true`** — right tool for 82 counties × 9 tables × ~12,000 rows of static federal data. Ships with the deploy. Zero network latency. The read-only connection is also our defense-in-depth layer for the AI page.
+- **Vercel KV** — sessions (Lucia-style), AI rate limiting, saved cohorts.
+- **Tailwind + shadcn/ui** — accessible production-grade primitives without rolling a design system.
+- **Recharts** for interactive charts; **d3-geo** for static SVG maps inside PDFs (Leaflet can't render server-side); **react-leaflet** for the interactive choropleth.
+- **`@react-pdf/renderer`** — real PDFs with embedded charts and source SQL in the appendix, not browser print-to-PDF.
+- **Groq + Llama 3.3 70B** for "Ask the EGI" — schema-aware natural-language-to-SQL with three-layer safety.
+- **Vercel + GitHub** — deploys on push.
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 15 App Router, Node.js runtime |
-| Language | TypeScript strict |
-| Primary DB | SQLite via `better-sqlite3` (readonly: true) |
-| Cache / sessions / saved cohorts / rate-limit | Vercel KV (Upstash Redis), in-memory fallback |
-| Styling | Tailwind CSS + custom CSS variables |
-| Charts | Recharts |
-| Map | react-leaflet + leaflet + CartoDB light tiles |
-| PDF | `@react-pdf/renderer` (Times-Roman + Helvetica built-ins) |
-| AI | `groq-sdk` + `llama-3.3-70b-versatile` |
-| Auth | Custom Lucia-style sessions + scrypt + HMAC cookies |
-| Fonts | Fraunces + IBM Plex Sans + IBM Plex Mono via `next/font/google` |
+### 4. Workflow design decisions
 
-## Repo structure
+- **Filter state in URL search params, not a state library.** A program officer can paste `/cohort?region=Delta&rural=1&burden_min=70` to a teammate and they see exactly the same view. Reload-safe, back-button-safe, shareable. A state library would add a layer without solving a problem.
+- **Editorial / data-journalism aesthetic, not SaaS dashboard.** References: The Pudding, FiveThirtyEight, Bloomberg's data team, Our World in Data. Warm off-white background, Fraunces serif for headers, IBM Plex Mono for tabular numerals, a single muted-red accent. Researchers respond to credibility aesthetics, not delight aesthetics.
+- **Every number is wrapped in an audit tooltip** showing the source table, federal dataset, and SQL that produced it. Defensibility is the product.
+- **Three-layer defense-in-depth on the AI page**: (1) LLM system prompt restricts to SELECT-only on whitelisted tables; (2) server-side regex rejects non-SELECT, multi-statement, or commented queries before they reach the database; (3) the database connection itself is opened `readonly: true` — the layer that actually matters.
+- **Real-time responsiveness, not real-time streams.** Sub-200ms updates on every filter, slider, and re-weighting via debounced requests + `AbortController` + `unstable_cache`. Live data streams would be the wrong primitive for annual federal releases.
 
-```
-/                                # Round 1 deliverables (READ-ONLY for Round 2)
-├── README.md                    # Round 1 README
-├── database.db                  # the source dataset
-├── DECISIONS.md                 # Round 1 decision log
-├── docs/, sql/, python/, schema/, data/, visualizations/, notebooks/
+### 5. Data organization approach
 
-/                                # Round 2 deliverables
-├── ROUND2_README.md             # THIS FILE
-├── ROUND2_DESIGN.md             # binding design document for the workbench
-├── ROUND2_CONTEXT.md            # schema, gotchas, audit-map source
-├── .claude/skills/              # the frontend-design skill (provenance)
+- **9-table normalized SQLite schema, FIPS-keyed throughout** — `counties`, `places_measures`, `svi`, `nppes_providers`, `acs_demographics`, the `v_equity_gap_index` view, plus methodology metadata and measure/data-source lookup tables.
+- **A single SQL view (`v_equity_gap_index`) composes the index.** Every surface in the app reads from this view, so changing the methodology means changing one SQL definition, not seven routes.
+- **All SQL lives in `lib/queries.ts`** as string templates, never inlined in route handlers — one place to audit, one place to change.
+- **Round 1 is the source of truth.** The Python ingestion pipeline (`python/`, `sql/`, `schema/`) builds `database.db`; Round 2's job is to surface it, not re-derive it. The app opens a read-only copy at `app/data/database.db` and never writes.
+- **CSV export on every panel** so researchers can take the data back into their own tools.
 
-/app/                            # the Next.js workbench
-├── src/app/                     # routes (App Router)
-│   ├── page.tsx                 # Surface 1 (landing)
-│   ├── county/[fips]/page.tsx   # Surface 2
-│   ├── compare/page.tsx         # Surface 3
-│   ├── cohort/page.tsx          # Surface 4
-│   ├── cohort/[token]/page.tsx  # Saved cohort
-│   ├── cohort/saved/page.tsx    # My saved cohorts
-│   ├── quadrant/page.tsx        # Surface 5
-│   ├── reweight/page.tsx        # Surface 6
-│   ├── methodology/page.tsx     # Surface 7
-│   ├── methodology/edit/page.tsx # Steward-only stub
-│   ├── ask/page.tsx             # AI page
-│   ├── login/page.tsx           # Auth
-│   └── api/                     # 14 typed REST routes
-├── src/components/              # FilterBar, RankingTable, ChoroplethMap, etc.
-├── src/lib/                     # types, db, kv, auth, queries, methodologies, ask-llm, ...
-├── src/styles/globals.css       # CSS variables + Tailwind layers
-├── scripts/                     # build-geojson, build-sql-content
-├── data/database.db             # copy of repo-root DB
-├── public/                      # ms-counties.geojson written at install time
-└── package.json
-```
+### 6. Key features and functionality
 
-## Scalability notes (also documented in `ROUND2_DESIGN.md` §7)
+Seven interactive surfaces plus an AI co-pilot — see [The seven surfaces](#the-seven-surfaces) for routes and tasks, and [Visual tour](#visual-tour) for screenshots.
 
-**To add another state (e.g. Alabama):**
-1. Re-run `python/01_load_data.py` with `state_fips = '01'` (~30 min).
-2. The 9-table schema, SQL view, and frontend all work unchanged because every query joins on FIPS.
-3. Add a state selector to the top nav.
-4. UI work: ~2 hours. **Total: under one day per state.**
+Cross-cutting: role-based access, accessible end-to-end (full keyboard nav, ARIA labels, contrast ≥ 4.5:1, color is never the sole signal), mobile-responsive down to 375px, multi-page PDF cohort report with methodology citations and SQL appendix, deployed live on Vercel.
 
-**To scale to national (3,143 counties):**
-1. SQLite remains viable to ~100k rows per table; we're at ~13,000. 8× headroom.
-2. If we outgrew SQLite, swap `src/lib/db.ts` for `pg` (Postgres). Every query is plain SQL and ports directly.
-3. Add `state_fips` to the index of every join column.
-4. Cache the ranking response per state via `unstable_cache`.
+### 7. Potential future improvements
 
-**To handle time series (annual snapshots):**
-1. Add a `snapshot_year` column to measurement tables.
-2. Parameterize the view: `v_equity_gap_index(snapshot_year)`.
-3. Swap headline cards for sparklines (Recharts component swap).
-4. Add a year selector to the top nav.
-5. **Total: under one day.**
+- **Multi-state expansion** — pipeline is already FIPS-keyed; adding Alabama is `01_load_data.py` with `state_fips = '01'` plus a state selector in the nav. Under one day per state.
+- **Time series** — add `snapshot_year` to the measurement tables, parameterize the view, swap headline cards for sparklines. ~1 day. Didn't build it for Round 2 because we have one vintage and faking trend lines would be dishonest.
+- **National scale (3,143 counties)** — SQLite handles ~100k rows comfortably; we're at 12,000, so 8× headroom without architectural change. If we outgrew SQLite, `lib/db.ts` swaps for `pg` against Postgres because every query is plain SQL.
+- **Institutional SSO** — replace the seeded demo users with the Center's identity provider (SAML / OIDC via a Lucia adapter).
+- **Cohort collaboration** — saved cohorts already live in KV; adding share-with-teammate is a permissions change, not an architecture change.
+- **Live data integration** — possible (route handlers support streaming; the SQL view can wrap a live pipeline) but the wrong primitive for federal annual data. Only worth building if a hospital partner brought their own live feed.
+- **Methodology version history** — track who changed which weighting and when, for peer-review-grade audit trails. This is exactly the kind of governance problem the Workbench is designed to solve.
+- **Intervention simulator** — pick a cohort, add hypothetical providers, see how the EGI ranking shifts. The math is non-trivial (provider-to-outcome elasticity needs a literature review we couldn't compress into the weekend), but the API contract is sketched in `lib/types.ts` so the frontend hook would slot in.
 
-## What this PR does NOT do (and why)
+---
 
-- **No Postgres / Supabase / Neon.** Wrong tool for static federal data.
-- **No Prisma / Drizzle / any ORM.** Plain SQL is correct here.
-- **No GraphQL / tRPC.** REST is the right answer for 14 endpoints.
-- **No state-management library.** URL search params + `useState` handle every interaction.
-- **No tests / Storybook / analytics / telemetry.** No reviewer, no time, no benefit.
-- **No i18n / dark mode / marketing copy.** This is a research tool.
+## Methodology & data sources
 
-## Deploying to Vercel
+The EGI combines three independent federal pillars into a single 0–100 underservedness score per county.
+
+| Pillar | Source | What it measures |
+|---|---|---|
+| **Burden** | CDC PLACES (BRFSS 2022–2023) | Average of ten chronic-disease and healthcare-access measures, min-max normalized 0–100, polarity-adjusted |
+| **Capacity** | CMS NPPES (May 2026) + US Census ACS (2018–2022) | Primary-care providers per 10,000 residents — inverted so high = scarce |
+| **Vulnerability** | CDC/ATSDR SVI (2022, Mississippi state file) | Overall percentile, intra-Mississippi |
+
+Equal-thirds weighting is the default (D-016). The Reweight Lab and Methodology pages document the headline finding's robustness to alternative weightings.
+
+### Data sources (vintage-locked)
+
+| Dataset | Publisher | Vintage | Retrieved | Rows |
+|---|---|---|---|---|
+| **CDC PLACES — Local Data for Better Health** | CDC | 2023 BRFSS (4 measures still 2022) | 2026-05-16 | 6,560 |
+| **Social Vulnerability Index** | CDC / ATSDR | 2022 (uses 2018–2022 ACS inputs) | 2026-05-16 | 82 |
+| **NPPES Data Dissemination** | CMS | May 2026 monthly snapshot | 2026-05-16 | 6,404 |
+| **American Community Survey (B01003 total population)** | US Census Bureau | 2018–2022 5-year | 2026-05-16 | 82 |
+| **2020 Census ZCTA-County Relationship File (MS subset)** | US Census Bureau | 2020 decennial Census geographies | 2026-05-16 | 771 |
+
+Full methodology, including 19 documented decisions (D-001 through D-019), lives in [DECISIONS.md](./DECISIONS.md) and [docs/data_cleaning_report.md](./docs/data_cleaning_report.md) at the repo root.
+
+---
+
+## Running locally
 
 ```bash
-npm install -g vercel              # if you don't have it
+# Clone the repo
+git clone https://github.com/yarwen0/hackathon
+cd hackathon
+
+# Install dependencies
 cd app
-vercel link                        # connect to a new project
-vercel env add AUTH_SECRET         # paste 32-byte hex
-vercel env add GROQ_API_KEY        # optional; if absent, chips still work
-# Optional: provision Vercel KV from the dashboard, then run:
-vercel env add KV_REST_API_URL
-vercel env add KV_REST_API_TOKEN
-vercel deploy --prod
+npm install
+
+# Configure environment
+cp .env.local.example .env.local
+# Edit .env.local — at minimum, set AUTH_SECRET (any 32+ char string for local dev)
+# GROQ_API_KEY enables free-text AI queries (optional — chips work without it)
+# KV vars enable saved cohorts (optional — app works without them in degraded mode)
+
+# Run
+npm run dev
+# → http://localhost:3000
 ```
 
-Vercel has prebuilt `better-sqlite3` binaries for Node 20+; no special
-configuration is required. Make sure `better-sqlite3` stays in
-`dependencies` (not devDependencies).
+The repo's `app/data/database.db` is a read-only copy of the Round 1 SQLite database (~2.2 MB). The Next.js app reads from this copy; the root-level `database.db` is the Round 1 artifact and is never modified.
 
-Without `KV_REST_API_URL` / `KV_REST_API_TOKEN`, the app uses an in-memory
-KV — sessions and saved cohorts work but don't persist across function
-restarts. Fine for a demo, swap in real KV for a production deployment.
+---
+
+## Repository layout
+
+Organized to match the Round 2 submission spec (Presentation · README · Source code · SQL scripts · Visualizations / Screenshots · Demo links).
+
+```
+hackathon-2026/
+│
+├── README.md                       ← Round 2 submission readme (this document)
+├── ROUND1_README.md                ← Round 1 readme (index methodology + findings)
+├── DECISIONS.md                    ← Round 1 decision log (D-001 through D-019)
+├── Round_2_Hackathon_Instructions.docx   ← official challenge brief
+│
+├── database.db                     ← Round 1 SQLite output, read by the Round 2 app (9 tables, 2.2 MB)
+├── run_pipeline.py                 ← Round 1: one-command pipeline regeneration
+├── requirements.txt                ← Round 1: Python dependencies
+│
+├── app/                            ← Round 2: Next.js application (source code)
+│   ├── src/
+│   │   ├── app/                    ← 7 surfaces + AI page + auth + 17 API routes
+│   │   ├── components/             ← charts, tables, filters, PDF renderer
+│   │   └── lib/                    ← db, auth, queries, types, AI, methodologies
+│   ├── data/database.db            ← read-only copy of root database.db
+│   ├── public/ms-counties.geojson  ← MS county geometry for the choropleth
+│   ├── scripts/                    ← build-geojson, build-sql-content
+│   ├── package.json
+│   └── vercel.json
+│
+├── python/                         ← Round 1 source: ingestion, quality checks, viz, stats
+│   ├── 01_load_data.py
+│   ├── 01b_data_quality_checks.py
+│   ├── 02_visualize.py
+│   └── 03_statistical_analysis.py
+│
+├── sql/                            ← Round 1 SQL scripts (q01 – q08)
+│   ├── q01_state_overview.sql
+│   ├── q02_burden_ranking.sql
+│   ├── q03_capacity_ranking.sql
+│   ├── q04_vulnerability_layer.sql
+│   ├── q05_equity_gap_index.sql    ← creates v_equity_gap_index VIEW
+│   ├── q06_top_underserved.sql
+│   ├── q07_regional_patterns.sql
+│   └── q08_drivers_analysis.sql
+│
+├── schema/                         ← Round 1: DDL, data dictionary, ER diagram
+│   ├── create_tables.sql
+│   ├── data_dictionary.md
+│   ├── er_diagram.md
+│   └── er_diagram.png
+│
+├── data/                           ← Round 1: raw + processed datasets
+│   ├── raw/                        ← source CSVs (PLACES, SVI, NPPES, ACS, ZCTA)
+│   └── processed/                  ← query outputs, DQ report, stats artifacts
+│
+├── notebooks/
+│   └── analysis_walkthrough.ipynb  ← Round 1: interactive end-to-end walkthrough
+│
+├── visualizations/                 ← Round 1: static PNG charts + Folium map
+│   ├── mississippi_egi_map.png
+│   ├── mississippi_egi_map.html    ← interactive choropleth
+│   ├── top10_bar.png
+│   ├── burden_capacity_scatter.png
+│   ├── drivers_grid.png
+│   ├── correlation_heatmap.png
+│   └── full_ranking.csv
+│
+└── docs/
+    ├── context_and_background.md   ← MS health context with citations
+    ├── data_cleaning_report.md     ← per-dataset cleaning narrative
+    └── screenshots/                ← Round 2 application screenshots (10 images)
+```
+
+**Mapping to the Round 2 submission spec**
+
+| Required item | Lives at |
+|---|---|
+| **README** | `README.md` (this document) + `ROUND1_README.md` |
+| **Source code** | `app/` (Round 2 Next.js app) · `python/` + `run_pipeline.py` (Round 1 pipeline) |
+| **SQL scripts** | `sql/q01_…` through `sql/q08_…` · `schema/create_tables.sql` |
+| **Visualizations / Screenshots** | `visualizations/` (Round 1 charts) · `docs/screenshots/` (Round 2 app) |
+| **Demo / GitHub links** | https://egi-workbench.vercel.app · https://github.com/yarwen0/hackathon |
+| **Presentation.pptx** | Add to the submission ZIP before sending (slides are presented in person) |
+
+---
 
 ## Acknowledgments
 
-- **CDC PLACES** — chronic disease prevalence (BRFSS-based small-area estimates).
-- **CDC/ATSDR SVI 2022** — social vulnerability index.
-- **CMS NPPES** — provider registry (May 2026 snapshot).
-- **US Census ACS 2018–2022 5-year** — population estimates (B01003_001E).
-- **US Census 2020 ZCTA-County Relationship File** — ZIP → county crosswalk.
-- **Mississippi Delta Regional Authority** — 18-county Delta classification.
-- **County Health Rankings** — equal-weighted aggregation precedent.
-- **Round 1 hackathon team** — for the database we built on.
+Built on the foundation of Round 1 — a 9-table relational schema, 19 documented methodological decisions, 27 quality checks, and a federally-cross-validated headline finding (Issaquena County's #1 ranking is independently corroborated by HRSA HPSA designation).
 
-Built for the **Gulf South Center for Community-Engaged Health Research and
-Innovation** — a state-level institution whose stakeholders need a single,
-defensible, plain-English ranking of which Mississippi counties to
-prioritize, with the ability to drill into "why is this county high?" for
-each county.
+Data: U.S. Centers for Disease Control and Prevention (PLACES, SVI), U.S. Centers for Medicare & Medicaid Services (NPPES), U.S. Census Bureau (American Community Survey, ZCTA Relationship Files).
 
-## License
+Built for the Gulf South Center for Community-Engaged Health Research and Innovation.
+Mississippi Health Equity Gap Index — May 2026.
 
-Hackathon submission. Code for evaluation purposes.
+---
+
+*"Where in Mississippi is the gap between health need and health resources largest?"* — the research question, Round 1.
