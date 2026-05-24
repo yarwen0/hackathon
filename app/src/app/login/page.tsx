@@ -39,42 +39,42 @@ export default async function LoginPage({
           </details>
 
           {/* Editorial data callout — fills the lower-left space and surfaces the
-              headline finding before the user logs in. */}
-          <div className="mt-12 pt-8 border-t border-rule">
-            <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-10">
+              headline finding before the user logs in. Sized to keep the whole
+              page visible in a typical laptop viewport without scrolling. */}
+          <div className="mt-8 pt-5 border-t border-rule">
+            <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-5">
               The index, in three numbers
             </p>
 
-            <div className="space-y-10 max-w-xl">
-              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
-                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+            <div className="space-y-4 max-w-xl">
+              <div className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
+                <p className="font-display text-4xl font-medium leading-none tracking-tight text-accent tabular w-14">
                   82
                 </p>
-                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
-                  Mississippi counties — every one ranked on a single composite
-                  built from three independent federal datasets.
+                <p className="text-xs text-foreground/75 leading-snug">
+                  Mississippi counties — every one ranked on a composite of three independent
+                  federal datasets.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
-                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+              <div className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
+                <p className="font-display text-4xl font-medium leading-none tracking-tight text-accent tabular w-14">
                   #1
                 </p>
-                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
-                  <span className="font-medium text-foreground">Issaquena</span> — the most
-                  underserved county, independently corroborated by federal HRSA Health
-                  Professional Shortage Area designation.
+                <p className="text-xs text-foreground/75 leading-snug">
+                  <span className="font-medium text-foreground">Issaquena</span> — most
+                  underserved county, independently corroborated by HRSA Health Professional
+                  Shortage Area designation.
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
-                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+              <div className="grid grid-cols-[auto_1fr] gap-x-5 items-baseline">
+                <p className="font-display text-4xl font-medium leading-none tracking-tight text-accent tabular w-14">
                   3
                 </p>
-                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
-                  federal datasets — CDC PLACES (disease burden), CMS NPPES (provider
-                  capacity), CDC/ATSDR SVI (social vulnerability) — each vintage-locked
-                  and reproducibly loaded.
+                <p className="text-xs text-foreground/75 leading-snug">
+                  federal datasets — CDC PLACES, CMS NPPES, CDC/ATSDR SVI — each
+                  vintage-locked and reproducibly loaded.
                 </p>
               </div>
             </div>
