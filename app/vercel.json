@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/export/pdf/cohort/route.ts": { "maxDuration": 60 },
+    "src/app/api/export/pdf/county/[fips]/route.ts": { "maxDuration": 60 },
+    "src/app/api/ask/route.ts": { "maxDuration": 30 }
+  }
+}
