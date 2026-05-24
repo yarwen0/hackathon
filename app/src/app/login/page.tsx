@@ -37,6 +37,48 @@ export default async function LoginPage({
               deployment this would integrate with the Center&apos;s institutional SSO.
             </p>
           </details>
+
+          {/* Editorial data callout — fills the lower-left space and surfaces the
+              headline finding before the user logs in. */}
+          <div className="mt-12 pt-8 border-t border-rule">
+            <p className="text-xs uppercase tracking-[0.15em] text-muted-foreground mb-10">
+              The index, in three numbers
+            </p>
+
+            <div className="space-y-10 max-w-xl">
+              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
+                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+                  82
+                </p>
+                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
+                  Mississippi counties — every one ranked on a single composite
+                  built from three independent federal datasets.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
+                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+                  #1
+                </p>
+                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
+                  <span className="font-medium text-foreground">Issaquena</span> — the most
+                  underserved county, independently corroborated by federal HRSA Health
+                  Professional Shortage Area designation.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-x-8 gap-y-3 md:items-baseline">
+                <p className="font-display text-7xl font-medium leading-none tracking-tight text-accent tabular">
+                  3
+                </p>
+                <p className="text-sm text-foreground/75 leading-snug max-w-xs">
+                  federal datasets — CDC PLACES (disease burden), CMS NPPES (provider
+                  capacity), CDC/ATSDR SVI (social vulnerability) — each vintage-locked
+                  and reproducibly loaded.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="lg:col-span-5">
