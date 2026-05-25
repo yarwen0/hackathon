@@ -12,6 +12,11 @@ interface Props {
   onChange: (min?: number, max?: number) => void;
   format?: (n: number) => string;
   unit?: string;
+  // 'range' (default) renders two stacked inputs for a min–max range;
+  // 'min' renders only the lower handle (≥); 'max' renders only the upper (≤).
+  // Single-handle modes avoid the dual-input overlap that makes the other
+  // input intercept all pointer events.
+  mode?: 'range' | 'min' | 'max';
 }
 
 export function RangeSlider({
@@ -24,6 +29,7 @@ export function RangeSlider({
   onChange,
   format = (n) => String(n),
   unit = '',
+  mode = 'range',
 }: Props) {
   const id = useId();
   const currentMin = valueMin ?? min;
@@ -31,6 +37,10 @@ export function RangeSlider({
   const minPct = ((currentMin - min) / (max - min)) * 100;
   const maxPct = ((currentMax - min) / (max - min)) * 100;
   const isActive = valueMin !== undefined || valueMax !== undefined;
+  const showMinInput = mode !== 'max';
+  const showMaxInput = mode !== 'min';
+  const showMinThumb = mode !== 'max';
+  const showMaxThumb = mode !== 'min';
 
   return (
     <div>
@@ -40,8 +50,11 @@ export function RangeSlider({
         </label>
         <div className="flex items-center gap-2 text-2xs tabular text-muted-foreground">
           <span className={isActive ? 'text-foreground' : ''}>
-            {format(currentMin)}–{format(currentMax)}
-            {unit}
+            {mode === 'min'
+              ? `${format(currentMin)}${unit}`
+              : mode === 'max'
+              ? `${format(currentMax)}${unit}`
+              : `${format(currentMin)}–${format(currentMax)}${unit}`}
           </span>
           {isActive ? (
             <button
@@ -61,44 +74,52 @@ export function RangeSlider({
           className="absolute top-0 bottom-0"
           style={{ left: `${minPct}%`, right: `${100 - maxPct}%`, background: 'var(--foreground)' }}
         />
-        <input
-          id={`${id}-min`}
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={currentMin}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            onChange(v <= min ? undefined : v, valueMax);
-          }}
-          className="absolute inset-x-0 w-full h-full opacity-0 cursor-grab"
-          aria-label={`${label} minimum`}
-        />
-        <input
-          id={`${id}-max`}
-          type="range"
-          min={min}
-          max={max}
-          step={step}
-          value={currentMax}
-          onChange={(e) => {
-            const v = Number(e.target.value);
-            onChange(valueMin, v >= max ? undefined : v);
-          }}
-          className="absolute inset-x-0 w-full h-full opacity-0 cursor-grab"
-          aria-label={`${label} maximum`}
-        />
-        <span
-          aria-hidden
-          className="absolute -top-1 w-3 h-3 -ml-1.5 bg-background border border-foreground rounded-full pointer-events-none"
-          style={{ left: `${minPct}%` }}
-        />
-        <span
-          aria-hidden
-          className="absolute -top-1 w-3 h-3 -ml-1.5 bg-background border border-foreground rounded-full pointer-events-none"
-          style={{ left: `${maxPct}%` }}
-        />
+        {showMinInput ? (
+          <input
+            id={`${id}-min`}
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={currentMin}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              onChange(v <= min ? undefined : v, valueMax);
+            }}
+            className="absolute inset-x-0 w-full h-full opacity-0 cursor-grab"
+            aria-label={`${label} minimum`}
+          />
+        ) : null}
+        {showMaxInput ? (
+          <input
+            id={`${id}-max`}
+            type="range"
+            min={min}
+            max={max}
+            step={step}
+            value={currentMax}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              onChange(valueMin, v >= max ? undefined : v);
+            }}
+            className="absolute inset-x-0 w-full h-full opacity-0 cursor-grab"
+            aria-label={`${label} maximum`}
+          />
+        ) : null}
+        {showMinThumb ? (
+          <span
+            aria-hidden
+            className="absolute -top-1 w-3 h-3 -ml-1.5 bg-background border border-foreground rounded-full pointer-events-none"
+            style={{ left: `${minPct}%` }}
+          />
+        ) : null}
+        {showMaxThumb ? (
+          <span
+            aria-hidden
+            className="absolute -top-1 w-3 h-3 -ml-1.5 bg-background border border-foreground rounded-full pointer-events-none"
+            style={{ left: `${maxPct}%` }}
+          />
+        ) : null}
       </div>
     </div>
   );

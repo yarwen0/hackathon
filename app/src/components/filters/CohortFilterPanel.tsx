@@ -192,40 +192,40 @@ export function CohortFilterPanel({ value, onChange, populationBounds }: Props) 
           <div className="space-y-5">
             <RangeSlider
               label="Diabetes ≥"
+              mode="min"
               min={5}
               max={20}
               step={0.5}
               valueMin={value.diabetesMin}
-              valueMax={undefined}
               format={(n) => `${n.toFixed(1)}%`}
               onChange={(min) => onChange({ ...value, diabetesMin: min })}
             />
             <RangeSlider
               label="Obesity ≥"
+              mode="min"
               min={30}
               max={55}
               step={0.5}
               valueMin={value.obesityMin}
-              valueMax={undefined}
               format={(n) => `${n.toFixed(1)}%`}
               onChange={(min) => onChange({ ...value, obesityMin: min })}
             />
             <RangeSlider
               label="Uninsured ≥"
+              mode="min"
               min={5}
               max={30}
               step={0.5}
               valueMin={value.uninsuredMin}
-              valueMax={undefined}
               format={(n) => `${n.toFixed(1)}%`}
               onChange={(min) => onChange({ ...value, uninsuredMin: min })}
             />
             <RangeSlider
               label="FM per 10k ≤"
+              mode="max"
               min={0}
               max={15}
               step={0.5}
-              valueMin={undefined}
               valueMax={value.fmPer10kMax}
               format={(n) => n.toFixed(1)}
               onChange={(_min, max) => onChange({ ...value, fmPer10kMax: max })}
