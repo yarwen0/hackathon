@@ -6,17 +6,35 @@ interface Props {
   truncated: boolean;
 }
 
+// Numeric columns get right-aligned headers AND cells so digits line up under
+// the column name. Inferred from the first non-null value in each column.
+function inferNumericColumns(columns: AskColumn[], rows: AskCellValue[][]): boolean[] {
+  return columns.map((_c, j) => {
+    for (const row of rows) {
+      const v = row[j];
+      if (v === null || v === undefined) continue;
+      return typeof v === 'number';
+    }
+    return false;
+  });
+}
+
 export function ResultsTable({ columns, rows, truncated }: Props) {
   if (rows.length === 0) {
     return <div className="text-sm text-muted-foreground italic">No rows returned.</div>;
   }
+  const numericCols = inferNumericColumns(columns, rows);
   return (
     <div className="overflow-x-auto border-t border-b">
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b text-2xs uppercase tracking-wider text-muted-foreground bg-muted/30">
-            {columns.map((c) => (
-              <th key={c.name} scope="col" className="py-2 px-3 text-left font-medium">
+            {columns.map((c, j) => (
+              <th
+                key={c.name}
+                scope="col"
+                className={`py-2 px-3 font-medium ${numericCols[j] ? 'text-right tabular' : 'text-left'}`}
+              >
                 {c.name}
               </th>
             ))}
@@ -28,7 +46,7 @@ export function ResultsTable({ columns, rows, truncated }: Props) {
               {r.map((v, j) => (
                 <td
                   key={j}
-                  className={`py-2 px-3 ${typeof v === 'number' ? 'text-right tabular' : ''}`}
+                  className={`py-2 px-3 ${numericCols[j] ? 'text-right tabular' : 'text-left'}`}
                 >
                   {v === null ? <span className="text-muted-foreground">—</span> : String(v)}
                 </td>
