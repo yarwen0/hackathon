@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { LogOut } from 'lucide-react';
 import { RoleBadge } from './RoleBadge';
+import { LoginLink } from './LoginLink';
 import type { AuthUser } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -63,12 +64,7 @@ export function TopNav({ user }: { user: AuthUser | null }) {
               </form>
             </>
           ) : (
-            <Link
-              href="/login"
-              className="text-xs uppercase tracking-wider text-foreground hover:text-accent transition-colors px-2 py-1"
-            >
-              Log in
-            </Link>
+            <LoginLink />
           )}
         </div>
       </div>
