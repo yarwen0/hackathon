@@ -47,6 +47,9 @@ Round_2_Hackathon_Instructions.docx
 # Submission ZIP (rebuildable artifact; not source)
 *_Round2.zip
 
+# Presentation (kept local, not committed)
+Presentation.pptx
+
 # Vercel CLI scratch
 .vercel/
 Round_2_Hackathon_Instructions.docx
